@@ -18,6 +18,7 @@
  *   --spins  Number of parallel requests. Default 50.
  *   --stock  Stock to put on the test prize. Default 3.
  *   --keep   Leave the test rows in place instead of cleaning up.
+ *   --insecure  Skip TLS certificate checks (staging with a self-signed cert).
  *
  * The test creates its own category and prize, deactivates every other
  * category for the duration so the wheel can only land on the test one, and
@@ -50,6 +51,7 @@ $site_url = rtrim((string) ($args['url'] ?? home_url()), '/');
 $endpoint = $site_url . '/wp-json/' . CIKW_REST::NAMESPACE . '/spin';
 $kiosk_key = CIKW_Settings::kiosk_key();
 $keep = isset($args['keep']);
+$insecure = isset($args['insecure']);
 
 global $wpdb;
 
@@ -154,7 +156,7 @@ echo "Fixture  : category {$category_id}, prize {$prize_id}, " . count($entry_id
 
 echo "Firing {$parallel_spins} parallel requests...\n";
 $started = microtime(true);
-$responses = cikw_test_parallel_post($endpoint, $credentials, $kiosk_key);
+$responses = cikw_test_parallel_post($endpoint, $credentials, $kiosk_key, $insecure);
 $elapsed = microtime(true) - $started;
 printf("Done in %.2fs\n\n", $elapsed);
 
@@ -292,7 +294,7 @@ exit(1);
  * @param array<int, array<string, mixed>> $payloads
  * @return array<int, array{status:int, body:string}>
  */
-function cikw_test_parallel_post(string $url, array $payloads, string $kiosk_key): array
+function cikw_test_parallel_post(string $url, array $payloads, string $kiosk_key, bool $insecure = false): array
 {
     $multi = curl_multi_init();
     $handles = [];
@@ -306,8 +308,8 @@ function cikw_test_parallel_post(string $url, array $payloads, string $kiosk_key
             CURLOPT_POSTFIELDS => wp_json_encode($payload),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 60,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_SSL_VERIFYPEER => !$insecure,
+            CURLOPT_SSL_VERIFYHOST => $insecure ? 0 : 2,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 CIKW_Security::KIOSK_KEY_HEADER . ': ' . $kiosk_key,
