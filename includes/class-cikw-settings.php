@@ -8,19 +8,13 @@ final class CIKW_Settings
 {
     public const OPTION_NAME = 'cikw_settings';
 
-    private const REQUIRED_FIELDS = [
-        'name' => 'Όνομα',
-        'email' => 'Email',
-        'phone' => 'Τηλέφωνο',
-        'need' => 'Ανάγκη',
-        'company' => 'Εταιρεία',
-        'role' => 'Ρόλος',
-    ];
+    /** Form fields the admin can mark as required. */
+    private const REQUIRED_FIELDS = ['name', 'email', 'phone', 'need', 'company', 'role'];
 
     public function init(): void
     {
         // The parent menu must exist before anything can hang off it, hence
-        // the early priority. Ρυθμίσεις is registered separately and late, so
+        // the early priority. Settings is registered separately and late, so
         // the submenu reads in the order booth staff need during the show
         // rather than the order the classes happen to load in.
         add_action('admin_menu', [$this, 'register_menu'], 5);
@@ -39,9 +33,8 @@ final class CIKW_Settings
             'required_fields' => ['name', 'email', 'phone', 'need'],
             'spin_duration_ms' => 4500,
             'sound_enabled' => true,
-            // Confirmed with the client: the show runs on a landscape
-            // 1920x1080 panel. Portrait is kept selectable because the panel
-            // was not final when this was built.
+            // Most trade-show kiosks are landscape 1920x1080 panels; portrait
+            // is selectable in the settings screen.
             'screen_orientation' => 'landscape',
             // Both keys default to empty and are minted on first use by
             // kiosk_key()/staff_key(). Generating them here would hand out a
@@ -50,13 +43,16 @@ final class CIKW_Settings
             'kiosk_key' => '',
             'staff_key' => '',
             'rate_limit_per_hour' => 40,
-            // ASSUMPTION: final legal consent wording is supplied by the event organiser.
-            'consent_text' => 'Συναινώ στην επεξεργασία των στοιχείων μου για τη συμμετοχή στην ενέργεια της έκθεσης.',
+            // Placeholder wording: the final legal consent text is the event
+            // organiser's responsibility and is edited in the settings screen.
+            // Defaults are stored in the option on activation, so they are
+            // plain strings rather than __() calls.
+            'consent_text' => 'I consent to the processing of my details for the purpose of taking part in this event promotion.',
             'consent_version' => 'draft-1',
             'privacy_policy_url' => '',
             'delete_data_on_uninstall' => false,
-            'email_subject' => 'Ευχαριστούμε για τη συμμετοχή σας',
-            'email_body' => "Σας ευχαριστούμε που επισκεφθήκατε το περίπτερό μας.\n\n{category_recap}\n\n{prize_details}",
+            'email_subject' => 'Thank you for taking part',
+            'email_body' => "Thank you for visiting our booth.\n\n{category_recap}\n\n{prize_details}",
         ];
     }
 
@@ -113,8 +109,8 @@ final class CIKW_Settings
     public function register_menu(): void
     {
         add_menu_page(
-            __('Έκθεση', 'cik-prize-wheel'),
-            __('Έκθεση', 'cik-prize-wheel'),
+            __('Prize Wheel', 'cik-prize-wheel'),
+            __('Prize Wheel', 'cik-prize-wheel'),
             'manage_options',
             'cikw-dashboard',
             [$this, 'render_dashboard_placeholder'],
@@ -127,8 +123,8 @@ final class CIKW_Settings
     {
         add_submenu_page(
             'cikw-dashboard',
-            __('Ρυθμίσεις', 'cik-prize-wheel'),
-            __('Ρυθμίσεις', 'cik-prize-wheel'),
+            __('Settings', 'cik-prize-wheel'),
+            __('Settings', 'cik-prize-wheel'),
             'manage_options',
             'cikw-settings',
             [$this, 'render_settings_page']
@@ -149,48 +145,48 @@ final class CIKW_Settings
 
         add_settings_section(
             'cikw_settings_main',
-            __('Βασικές ρυθμίσεις kiosk', 'cik-prize-wheel'),
+            __('Kiosk settings', 'cik-prize-wheel'),
             static function (): void {
-                echo '<p>' . esc_html__('Ρυθμίσεις λειτουργίας του kiosk. Οι συμμετοχές, το export και τα email προστίθενται σε επόμενη φάση.', 'cik-prize-wheel') . '</p>';
+                echo '<p>' . esc_html__('How the kiosk behaves, which form fields are required, and the confirmation email.', 'cik-prize-wheel') . '</p>';
             },
             'cikw-settings'
         );
 
         $fields = [
-            'max_spins_per_registration' => __('Μέγιστες προσπάθειες ανά συμμετοχή', 'cik-prize-wheel'),
-            'idle_timeout_seconds' => __('Idle timeout (δευτερόλεπτα)', 'cik-prize-wheel'),
-            'idle_warning_seconds' => __('Προειδοποίηση idle (δευτερόλεπτα)', 'cik-prize-wheel'),
-            'thankyou_auto_return_seconds' => __('Αυτόματη επιστροφή από thank you', 'cik-prize-wheel'),
-            'spin_duration_ms' => __('Διάρκεια περιστροφής (ms)', 'cik-prize-wheel'),
-            'rate_limit_per_hour' => __('Όριο εγγραφών ανά ώρα / συσκευή', 'cik-prize-wheel'),
+            'max_spins_per_registration' => __('Maximum spins per registration', 'cik-prize-wheel'),
+            'idle_timeout_seconds' => __('Idle timeout (seconds)', 'cik-prize-wheel'),
+            'idle_warning_seconds' => __('Idle warning (seconds)', 'cik-prize-wheel'),
+            'thankyou_auto_return_seconds' => __('Auto-return from thank-you screen (seconds)', 'cik-prize-wheel'),
+            'spin_duration_ms' => __('Spin duration (ms)', 'cik-prize-wheel'),
+            'rate_limit_per_hour' => __('Registrations per hour / device', 'cik-prize-wheel'),
         ];
 
         foreach ($fields as $key => $label) {
             add_settings_field($key, $label, [$this, 'render_number_field'], 'cikw-settings', 'cikw_settings_main', ['key' => $key]);
         }
 
-        add_settings_field('stock_exhausted_policy', __('Πολιτική εξαντλημένου stock', 'cik-prize-wheel'), [$this, 'render_policy_field'], 'cikw-settings', 'cikw_settings_main');
-        add_settings_field('screen_orientation', __('Προσανατολισμός οθόνης', 'cik-prize-wheel'), [$this, 'render_orientation_field'], 'cikw-settings', 'cikw_settings_main');
-        add_settings_field('required_fields', __('Υποχρεωτικά πεδία φόρμας', 'cik-prize-wheel'), [$this, 'render_required_fields'], 'cikw-settings', 'cikw_settings_main');
-        add_settings_field('sound_enabled', __('Ήχος', 'cik-prize-wheel'), [$this, 'render_checkbox_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'sound_enabled']);
+        add_settings_field('stock_exhausted_policy', __('Out-of-stock policy', 'cik-prize-wheel'), [$this, 'render_policy_field'], 'cikw-settings', 'cikw_settings_main');
+        add_settings_field('screen_orientation', __('Screen orientation', 'cik-prize-wheel'), [$this, 'render_orientation_field'], 'cikw-settings', 'cikw_settings_main');
+        add_settings_field('required_fields', __('Required form fields', 'cik-prize-wheel'), [$this, 'render_required_fields'], 'cikw-settings', 'cikw_settings_main');
+        add_settings_field('sound_enabled', __('Sound', 'cik-prize-wheel'), [$this, 'render_checkbox_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'sound_enabled']);
         add_settings_field('kiosk_key', __('Kiosk key', 'cik-prize-wheel'), [$this, 'render_key_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'kiosk_key']);
-        add_settings_field('staff_key', __('Staff key (εξαργύρωση)', 'cik-prize-wheel'), [$this, 'render_key_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'staff_key']);
-        add_settings_field('consent_text', __('Κείμενο συγκατάθεσης', 'cik-prize-wheel'), [$this, 'render_textarea_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'consent_text']);
-        add_settings_field('consent_version', __('Έκδοση συγκατάθεσης', 'cik-prize-wheel'), [$this, 'render_text_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'consent_version', 'class' => 'regular-text']);
-        add_settings_field('privacy_policy_url', __('URL πολιτικής απορρήτου', 'cik-prize-wheel'), [$this, 'render_url_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'privacy_policy_url']);
-        add_settings_field('email_subject', __('Θέμα email', 'cik-prize-wheel'), [$this, 'render_text_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'email_subject', 'class' => 'large-text']);
+        add_settings_field('staff_key', __('Staff key (redemption)', 'cik-prize-wheel'), [$this, 'render_key_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'staff_key']);
+        add_settings_field('consent_text', __('Consent text', 'cik-prize-wheel'), [$this, 'render_textarea_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'consent_text']);
+        add_settings_field('consent_version', __('Consent version', 'cik-prize-wheel'), [$this, 'render_text_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'consent_version', 'class' => 'regular-text']);
+        add_settings_field('privacy_policy_url', __('Privacy policy URL', 'cik-prize-wheel'), [$this, 'render_url_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'privacy_policy_url']);
+        add_settings_field('email_subject', __('Email subject', 'cik-prize-wheel'), [$this, 'render_text_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'email_subject', 'class' => 'large-text']);
         add_settings_field(
             'email_body',
-            __('Πρότυπο email', 'cik-prize-wheel'),
+            __('Email template', 'cik-prize-wheel'),
             [$this, 'render_textarea_field'],
             'cikw-settings',
             'cikw_settings_main',
             [
                 'key' => 'email_body',
-                'description' => __('Το κείμενο εισαγωγής. Η κατηγορία, το δώρο και ο κωδικός προστίθενται αυτόματα από κάτω. Διαθέσιμα πεδία: <code>{full_name}</code>, <code>{first_name}</code>, <code>{category_recap}</code>, <code>{prize_details}</code>, <code>{voucher_codes}</code>.', 'cik-prize-wheel'),
+                'description' => __('The introduction text. The category, prize and code are added below it automatically. Available placeholders: <code>{full_name}</code>, <code>{first_name}</code>, <code>{category_recap}</code>, <code>{prize_details}</code>, <code>{voucher_codes}</code>.', 'cik-prize-wheel'),
             ]
         );
-        add_settings_field('delete_data_on_uninstall', __('Διαγραφή δεδομένων στο uninstall', 'cik-prize-wheel'), [$this, 'render_checkbox_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'delete_data_on_uninstall']);
+        add_settings_field('delete_data_on_uninstall', __('Delete data on uninstall', 'cik-prize-wheel'), [$this, 'render_checkbox_field'], 'cikw-settings', 'cikw_settings_main', ['key' => 'delete_data_on_uninstall']);
     }
 
     public function sanitize_options(mixed $input): array
@@ -214,7 +210,7 @@ final class CIKW_Settings
 
         $required = $input['required_fields'] ?? $defaults['required_fields'];
         $required = is_array($required) ? array_map('sanitize_key', $required) : [];
-        $output['required_fields'] = array_values(array_intersect(array_keys(self::REQUIRED_FIELDS), $required));
+        $output['required_fields'] = array_values(array_intersect(self::REQUIRED_FIELDS, $required));
 
         $output['sound_enabled'] = !empty($input['sound_enabled']);
         $output['delete_data_on_uninstall'] = !empty($input['delete_data_on_uninstall']);
@@ -242,16 +238,16 @@ final class CIKW_Settings
     public function render_dashboard_placeholder(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
 
         echo '<div class="wrap">';
-        echo '<h1>' . esc_html__('Έκθεση', 'cik-prize-wheel') . '</h1>';
-        echo '<p>' . esc_html__('Διαχείριση της ενέργειας της έκθεσης. Οι συμμετοχές, το export και ο πίνακας ελέγχου προστίθενται σε επόμενη φάση.', 'cik-prize-wheel') . '</p>';
+        echo '<h1>' . esc_html__('Prize Wheel', 'cik-prize-wheel') . '</h1>';
+        echo '<p>' . esc_html__('Manage the prize wheel for your event: categories, prizes, entries, redemption and settings.', 'cik-prize-wheel') . '</p>';
         echo '<p>';
-        echo '<a class="button button-primary" href="' . esc_url(admin_url('admin.php?page=cikw-categories')) . '">' . esc_html__('Κατηγορίες', 'cik-prize-wheel') . '</a> ';
-        echo '<a class="button" href="' . esc_url(admin_url('admin.php?page=cikw-prizes')) . '">' . esc_html__('Δώρα', 'cik-prize-wheel') . '</a> ';
-        echo '<a class="button" href="' . esc_url(admin_url('admin.php?page=cikw-settings')) . '">' . esc_html__('Ρυθμίσεις', 'cik-prize-wheel') . '</a>';
+        echo '<a class="button button-primary" href="' . esc_url(admin_url('admin.php?page=cikw-categories')) . '">' . esc_html__('Categories', 'cik-prize-wheel') . '</a> ';
+        echo '<a class="button" href="' . esc_url(admin_url('admin.php?page=cikw-prizes')) . '">' . esc_html__('Prizes', 'cik-prize-wheel') . '</a> ';
+        echo '<a class="button" href="' . esc_url(admin_url('admin.php?page=cikw-settings')) . '">' . esc_html__('Settings', 'cik-prize-wheel') . '</a>';
         echo '</p>';
         echo '</div>';
     }
@@ -259,15 +255,15 @@ final class CIKW_Settings
     public function render_settings_page(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
 
         echo '<div class="wrap">';
-        echo '<h1>' . esc_html__('Ρυθμίσεις Prize Wheel Kiosk', 'cik-prize-wheel') . '</h1>';
+        echo '<h1>' . esc_html__('Prize Wheel Kiosk settings', 'cik-prize-wheel') . '</h1>';
         echo '<form method="post" action="options.php">';
         settings_fields('cikw_settings_group');
         do_settings_sections('cikw-settings');
-        submit_button(__('Αποθήκευση ρυθμίσεων', 'cik-prize-wheel'));
+        submit_button(__('Save settings', 'cik-prize-wheel'));
         echo '</form>';
         echo '</div>';
     }
@@ -291,7 +287,7 @@ final class CIKW_Settings
         $current = (string) ($options['stock_exhausted_policy'] ?? 'to_lose');
 
         echo '<select name="' . esc_attr(self::OPTION_NAME) . '[stock_exhausted_policy]">';
-        foreach (['to_lose' => __('Μεταφορά στο “καμία νίκη”', 'cik-prize-wheel'), 'redistribute' => __('Αναδιανομή στα διαθέσιμα δώρα', 'cik-prize-wheel')] as $value => $label) {
+        foreach (['to_lose' => __('Move to "no win"', 'cik-prize-wheel'), 'redistribute' => __('Redistribute to available prizes', 'cik-prize-wheel')] as $value => $label) {
             printf('<option value="%1$s" %2$s>%3$s</option>', esc_attr($value), selected($current, $value, false), esc_html($label));
         }
         echo '</select>';
@@ -308,8 +304,8 @@ final class CIKW_Settings
         $current = (string) ($options['screen_orientation'] ?? 'landscape');
 
         $choices = [
-            'landscape' => __('Οριζόντια (1920×1080)', 'cik-prize-wheel'),
-            'portrait' => __('Κάθετη (1080×1920)', 'cik-prize-wheel'),
+            'landscape' => __('Landscape (1920×1080)', 'cik-prize-wheel'),
+            'portrait' => __('Portrait (1080×1920)', 'cik-prize-wheel'),
         ];
 
         echo '<select name="' . esc_attr(self::OPTION_NAME) . '[screen_orientation]">';
@@ -317,7 +313,7 @@ final class CIKW_Settings
             printf('<option value="%1$s" %2$s>%3$s</option>', esc_attr($value), selected($current, $value, false), esc_html($label));
         }
         echo '</select>';
-        echo '<p class="description">' . esc_html__('Καθορίζει τη διάταξη του kiosk. Αλλάξτε το αν αλλάξει η οθόνη της έκθεσης.', 'cik-prize-wheel') . '</p>';
+        echo '<p class="description">' . esc_html__('Selects the kiosk layout. Change it if the kiosk screen changes.', 'cik-prize-wheel') . '</p>';
     }
 
     public function render_required_fields(): void
@@ -325,7 +321,16 @@ final class CIKW_Settings
         $options = self::get_options();
         $required = is_array($options['required_fields'] ?? null) ? $options['required_fields'] : [];
 
-        foreach (self::REQUIRED_FIELDS as $key => $label) {
+        $labels = [
+            'name' => __('Name', 'cik-prize-wheel'),
+            'email' => __('Email', 'cik-prize-wheel'),
+            'phone' => __('Phone', 'cik-prize-wheel'),
+            'need' => __('Interest', 'cik-prize-wheel'),
+            'company' => __('Company', 'cik-prize-wheel'),
+            'role' => __('Role', 'cik-prize-wheel'),
+        ];
+
+        foreach ($labels as $key => $label) {
             printf(
                 '<label style="display:block;margin:0 0 6px;"><input type="checkbox" name="%1$s[required_fields][]" value="%2$s" %3$s /> %4$s</label>',
                 esc_attr(self::OPTION_NAME),
@@ -346,7 +351,7 @@ final class CIKW_Settings
             esc_attr(self::OPTION_NAME),
             esc_attr($key),
             checked(!empty($options[$key]), true, false),
-            esc_html__('Ενεργό', 'cik-prize-wheel')
+            esc_html__('Active', 'cik-prize-wheel')
         );
     }
 
@@ -379,7 +384,7 @@ final class CIKW_Settings
             esc_attr(self::OPTION_NAME),
             esc_attr($key),
             esc_attr($value),
-            esc_html__('Αδειάστε το πεδίο και αποθηκεύστε για να δημιουργηθεί νέο κλειδί.', 'cik-prize-wheel')
+            esc_html__('Clear the field and save to generate a new key.', 'cik-prize-wheel')
         );
     }
 

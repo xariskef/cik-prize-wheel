@@ -9,7 +9,7 @@ if (!class_exists('WP_List_Table')) {
 }
 
 /**
- * Έκθεση → Συμμετοχές (spec section 6.3).
+ * Prize Wheel > Entries.
  *
  * One row per participation, with its spins aggregated. The CSV export is one
  * row per spin - see CIKW_Export.
@@ -33,18 +33,18 @@ final class CIKW_Entries_Table extends WP_List_Table
     public function get_columns(): array
     {
         return [
-            'created_at' => __('Ημερομηνία', 'cik-prize-wheel'),
-            'full_name' => __('Όνομα', 'cik-prize-wheel'),
+            'created_at' => __('Date', 'cik-prize-wheel'),
+            'full_name' => __('Name', 'cik-prize-wheel'),
             'email' => __('Email', 'cik-prize-wheel'),
-            'phone' => __('Τηλέφωνο', 'cik-prize-wheel'),
-            'company' => __('Εταιρεία', 'cik-prize-wheel'),
-            'role' => __('Ιδιότητα', 'cik-prize-wheel'),
-            'need' => __('Ανάγκη', 'cik-prize-wheel'),
-            'spins' => __('Περιστροφές', 'cik-prize-wheel'),
-            'outcome' => __('Αποτέλεσμα', 'cik-prize-wheel'),
-            'prize' => __('Δώρο', 'cik-prize-wheel'),
-            'voucher' => __('Κωδικός', 'cik-prize-wheel'),
-            'redeemed' => __('Εξαργύρωση', 'cik-prize-wheel'),
+            'phone' => __('Phone', 'cik-prize-wheel'),
+            'company' => __('Company', 'cik-prize-wheel'),
+            'role' => __('Role', 'cik-prize-wheel'),
+            'need' => __('Interest', 'cik-prize-wheel'),
+            'spins' => __('Spins', 'cik-prize-wheel'),
+            'outcome' => __('Outcome', 'cik-prize-wheel'),
+            'prize' => __('Prize', 'cik-prize-wheel'),
+            'voucher' => __('Code', 'cik-prize-wheel'),
+            'redeemed' => __('Redemption', 'cik-prize-wheel'),
             'email_status' => __('Email', 'cik-prize-wheel'),
         ];
     }
@@ -82,7 +82,7 @@ final class CIKW_Entries_Table extends WP_List_Table
 
     public function no_items(): void
     {
-        esc_html_e('Δεν βρέθηκαν συμμετοχές.', 'cik-prize-wheel');
+        esc_html_e('No entries found.', 'cik-prize-wheel');
     }
 
     /**
@@ -101,16 +101,16 @@ final class CIKW_Entries_Table extends WP_List_Table
         printf(
             '<input type="date" name="cikw_date_from" value="%s" aria-label="%s" /> ',
             esc_attr((string) $filters['date_from']),
-            esc_attr__('Από ημερομηνία', 'cik-prize-wheel')
+            esc_attr__('From date', 'cik-prize-wheel')
         );
         printf(
             '<input type="date" name="cikw_date_to" value="%s" aria-label="%s" /> ',
             esc_attr((string) $filters['date_to']),
-            esc_attr__('Έως ημερομηνία', 'cik-prize-wheel')
+            esc_attr__('To date', 'cik-prize-wheel')
         );
 
         echo '<select name="cikw_category">';
-        printf('<option value="0">%s</option>', esc_html__('Όλες οι κατηγορίες', 'cik-prize-wheel'));
+        printf('<option value="0">%s</option>', esc_html__('All categories', 'cik-prize-wheel'));
         foreach (CIKW_Entries_Query::filter_categories() as $category) {
             printf(
                 '<option value="%1$d" %2$s>%3$s</option>',
@@ -122,29 +122,29 @@ final class CIKW_Entries_Table extends WP_List_Table
         echo '</select> ';
 
         $this->render_select('cikw_outcome', (string) $filters['outcome'], [
-            '' => __('Κάθε αποτέλεσμα', 'cik-prize-wheel'),
-            'win' => __('Κέρδισαν', 'cik-prize-wheel'),
-            'lose' => __('Δεν κέρδισαν', 'cik-prize-wheel'),
+            '' => __('Any outcome', 'cik-prize-wheel'),
+            'win' => __('Won', 'cik-prize-wheel'),
+            'lose' => __('Did not win', 'cik-prize-wheel'),
         ]);
 
         $this->render_select('cikw_redeemed', (string) $filters['redeemed'], [
-            '' => __('Κάθε εξαργύρωση', 'cik-prize-wheel'),
-            'yes' => __('Εξαργυρώθηκε', 'cik-prize-wheel'),
-            'no' => __('Εκκρεμεί εξαργύρωση', 'cik-prize-wheel'),
+            '' => __('Any redemption status', 'cik-prize-wheel'),
+            'yes' => __('Redeemed', 'cik-prize-wheel'),
+            'no' => __('Not yet redeemed', 'cik-prize-wheel'),
         ]);
 
         $this->render_select('cikw_email_status', (string) $filters['email_status'], [
-            '' => __('Κάθε κατάσταση email', 'cik-prize-wheel'),
-            'pending' => __('Σε αναμονή', 'cik-prize-wheel'),
-            'sent' => __('Στάλθηκε', 'cik-prize-wheel'),
-            'failed' => __('Απέτυχε', 'cik-prize-wheel'),
-            'skipped' => __('Παραλείφθηκε', 'cik-prize-wheel'),
+            '' => __('Any email status', 'cik-prize-wheel'),
+            'pending' => __('Pending', 'cik-prize-wheel'),
+            'sent' => __('Sent', 'cik-prize-wheel'),
+            'failed' => __('Failed', 'cik-prize-wheel'),
+            'skipped' => __('Skipped', 'cik-prize-wheel'),
         ]);
 
-        submit_button(__('Φιλτράρισμα', 'cik-prize-wheel'), '', 'filter_action', false);
+        submit_button(__('Filter', 'cik-prize-wheel'), '', 'filter_action', false);
 
         echo ' <a class="button" href="' . esc_url(admin_url('admin.php?page=cikw-entries')) . '">'
-            . esc_html__('Καθαρισμός', 'cik-prize-wheel') . '</a>';
+            . esc_html__('Clear', 'cik-prize-wheel') . '</a>';
 
         echo '</div>';
     }
@@ -176,9 +176,9 @@ final class CIKW_Entries_Table extends WP_List_Table
         $actions = [];
 
         if ('sent' === $item['email_status']) {
-            $actions['resend'] = $this->action_link($item, __('Επαναποστολή email', 'cik-prize-wheel'));
+            $actions['resend'] = $this->action_link($item, __('Resend email', 'cik-prize-wheel'));
         } else {
-            $actions['resend'] = $this->action_link($item, __('Αποστολή email τώρα', 'cik-prize-wheel'));
+            $actions['resend'] = $this->action_link($item, __('Send email now', 'cik-prize-wheel'));
         }
 
         return '<strong>' . esc_html($stamp) . '</strong>' . $this->row_actions($actions);
@@ -220,14 +220,14 @@ final class CIKW_Entries_Table extends WP_List_Table
     public function column_outcome($item): string
     {
         if (0 === (int) $item['spin_count']) {
-            return '<span style="color:#787c82;">' . esc_html__('Δεν έπαιξε', 'cik-prize-wheel') . '</span>';
+            return '<span style="color:#787c82;">' . esc_html__('Did not play', 'cik-prize-wheel') . '</span>';
         }
 
         if ((int) $item['win_count'] > 0) {
-            return '<span style="color:#0a7c2f;font-weight:600;">' . esc_html__('Κέρδισε', 'cik-prize-wheel') . '</span>';
+            return '<span style="color:#0a7c2f;font-weight:600;">' . esc_html__('Won', 'cik-prize-wheel') . '</span>';
         }
 
-        return esc_html__('Δεν κέρδισε', 'cik-prize-wheel');
+        return esc_html__('Did not win', 'cik-prize-wheel');
     }
 
     /** @param array<string, mixed> $item */
@@ -246,7 +246,7 @@ final class CIKW_Entries_Table extends WP_List_Table
         }
 
         if (empty($item['redeemed_at'])) {
-            return '<span style="color:#b32d2e;">' . esc_html__('Εκκρεμεί', 'cik-prize-wheel') . '</span>';
+            return '<span style="color:#b32d2e;">' . esc_html__('Pending', 'cik-prize-wheel') . '</span>';
         }
 
         return esc_html(mysql2date('d/m/Y H:i', (string) $item['redeemed_at']));
@@ -256,10 +256,10 @@ final class CIKW_Entries_Table extends WP_List_Table
     public function column_email_status($item): string
     {
         $labels = [
-            'pending' => __('Σε αναμονή', 'cik-prize-wheel'),
-            'sent' => __('Στάλθηκε', 'cik-prize-wheel'),
-            'failed' => __('Απέτυχε', 'cik-prize-wheel'),
-            'skipped' => __('Παραλείφθηκε', 'cik-prize-wheel'),
+            'pending' => __('Pending', 'cik-prize-wheel'),
+            'sent' => __('Sent', 'cik-prize-wheel'),
+            'failed' => __('Failed', 'cik-prize-wheel'),
+            'skipped' => __('Skipped', 'cik-prize-wheel'),
         ];
 
         $status = (string) $item['email_status'];

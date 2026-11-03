@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * Everything the frontend needs before a visitor exists: wheel segments,
- * the "Ανάγκη" dropdown, timings, consent, and all Greek UI copy.
+ * the "interest" dropdown, timings, consent, and all kiosk UI copy.
  *
  * Shared by GET /config and by the companion theme, which inlines the same
  * payload into data-props so the first screen paints without a round trip.
@@ -101,82 +101,84 @@ final class CIKW_Config
     }
 
     /**
-     * All user-facing copy, in Greek (spec section 1: Greek only).
+     * All user-facing kiosk copy, as translatable English source strings.
      *
-     * Kept server-side so booth staff can have wording changed during the
-     * show without a frontend rebuild.
+     * Kept server-side so wording can be changed (via translations or the
+     * cikw_config_strings filter) during an event without a frontend rebuild.
      */
     public static function strings(): array
     {
         $strings = [
             // ATTRACT
-            'attract_title' => __('Γύρνα τον τροχό & κέρδισε', 'cik-prize-wheel'),
-            'attract_cta' => __('Άγγιξε την οθόνη για να ξεκινήσεις', 'cik-prize-wheel'),
+            'attract_title' => __('Spin the wheel & win', 'cik-prize-wheel'),
+            'attract_cta' => __('Touch the screen to start', 'cik-prize-wheel'),
 
             // FORM
-            'form_title' => __('Συμπλήρωσε τα στοιχεία σου', 'cik-prize-wheel'),
-            'form_subtitle' => __('Χρειαζόμαστε λίγα στοιχεία για να σου στείλουμε την επιβεβαίωση.', 'cik-prize-wheel'),
-            'field_full_name' => __('Ονοματεπώνυμο', 'cik-prize-wheel'),
+            'form_title' => __('Fill in your details', 'cik-prize-wheel'),
+            'form_subtitle' => __('We need a few details to send you your confirmation.', 'cik-prize-wheel'),
+            'field_full_name' => __('Full name', 'cik-prize-wheel'),
             'field_email' => __('Email', 'cik-prize-wheel'),
-            'field_phone' => __('Τηλέφωνο', 'cik-prize-wheel'),
-            'field_company' => __('Εταιρεία', 'cik-prize-wheel'),
-            'field_role' => __('Ιδιότητα', 'cik-prize-wheel'),
-            'field_need' => __('Τι σε ενδιαφέρει;', 'cik-prize-wheel'),
-            'field_need_placeholder' => __('Επίλεξε κατηγορία', 'cik-prize-wheel'),
-            'field_optional' => __('προαιρετικό', 'cik-prize-wheel'),
-            'consent_marketing' => __('Θέλω να λαμβάνω ενημερώσεις για τα προϊόντα σας.', 'cik-prize-wheel'),
-            'privacy_link' => __('Πολιτική απορρήτου', 'cik-prize-wheel'),
-            'form_submit' => __('Συνέχεια', 'cik-prize-wheel'),
-            'form_back' => __('Πίσω', 'cik-prize-wheel'),
+            'field_phone' => __('Phone', 'cik-prize-wheel'),
+            'field_company' => __('Company', 'cik-prize-wheel'),
+            'field_role' => __('Role', 'cik-prize-wheel'),
+            'field_need' => __('What are you interested in?', 'cik-prize-wheel'),
+            'field_need_placeholder' => __('Choose a category', 'cik-prize-wheel'),
+            'field_optional' => __('optional', 'cik-prize-wheel'),
+            'consent_marketing' => __('I would like to receive updates about your products.', 'cik-prize-wheel'),
+            'privacy_link' => __('Privacy policy', 'cik-prize-wheel'),
+            'form_submit' => __('Continue', 'cik-prize-wheel'),
+            'form_back' => __('Back', 'cik-prize-wheel'),
 
             // WHEEL
-            'wheel_title' => __('Ο τροχός είναι έτοιμος', 'cik-prize-wheel'),
-            'wheel_cta' => __('Πάτησε για να γυρίσεις τον τροχό', 'cik-prize-wheel'),
-            'wheel_spinning' => __('Ο τροχός γυρίζει…', 'cik-prize-wheel'),
-            'spins_remaining_one' => __('Σου απομένει 1 προσπάθεια', 'cik-prize-wheel'),
-            'spins_remaining_many' => __('Σου απομένουν %d προσπάθειες', 'cik-prize-wheel'),
+            'wheel_title' => __('The wheel is ready', 'cik-prize-wheel'),
+            'wheel_cta' => __('Tap to spin the wheel', 'cik-prize-wheel'),
+            'wheel_spinning' => __('The wheel is spinning…', 'cik-prize-wheel'),
+            'spins_remaining_one' => __('You have 1 spin left', 'cik-prize-wheel'),
+            /* translators: %d: number of spins left. */
+            'spins_remaining_many' => __('You have %d spins left', 'cik-prize-wheel'),
 
             // RESULT
-            'result_title' => __('Έπεσες στην κατηγορία', 'cik-prize-wheel'),
-            'result_win_cta' => __('Δες το δώρο σου', 'cik-prize-wheel'),
-            'result_retry_cta' => __('Ξαναπροσπάθησε', 'cik-prize-wheel'),
-            'result_continue_cta' => __('Συνέχεια', 'cik-prize-wheel'),
-            'result_lose_title' => __('Δεν κέρδισες αυτή τη φορά', 'cik-prize-wheel'),
+            'result_title' => __('You landed on', 'cik-prize-wheel'),
+            'result_win_cta' => __('See your prize', 'cik-prize-wheel'),
+            'result_retry_cta' => __('Try again', 'cik-prize-wheel'),
+            'result_continue_cta' => __('Continue', 'cik-prize-wheel'),
+            'result_lose_title' => __('No prize this time', 'cik-prize-wheel'),
 
             // PRIZE
-            'prize_title' => __('Κέρδισες!', 'cik-prize-wheel'),
-            'prize_voucher_label' => __('Ο κωδικός σου', 'cik-prize-wheel'),
-            'prize_voucher_hint' => __('Δείξε τον κωδικό στο περίπτερο για να παραλάβεις το δώρο σου.', 'cik-prize-wheel'),
-            'prize_cta' => __('Ολοκλήρωση', 'cik-prize-wheel'),
+            'prize_title' => __('You won!', 'cik-prize-wheel'),
+            'prize_voucher_label' => __('Your code', 'cik-prize-wheel'),
+            'prize_voucher_hint' => __('Show this code at the booth to collect your prize.', 'cik-prize-wheel'),
+            'prize_cta' => __('Finish', 'cik-prize-wheel'),
 
             // THANK YOU
-            'thankyou_title' => __('Ευχαριστούμε!', 'cik-prize-wheel'),
-            'thankyou_body' => __('Θα λάβεις email επιβεβαίωσης στη διεύθυνση που δήλωσες.', 'cik-prize-wheel'),
-            'thankyou_footer' => __('Καλή συνέχεια στην έκθεση!', 'cik-prize-wheel'),
+            'thankyou_title' => __('Thank you!', 'cik-prize-wheel'),
+            'thankyou_body' => __('You will receive a confirmation email at the address you entered.', 'cik-prize-wheel'),
+            'thankyou_footer' => __('Enjoy the rest of the event!', 'cik-prize-wheel'),
 
             // IDLE
-            'idle_warning_title' => __('Είσαι ακόμα εδώ;', 'cik-prize-wheel'),
-            'idle_warning_body' => __('Η οθόνη θα επιστρέψει στην αρχή σε %d δευτερόλεπτα.', 'cik-prize-wheel'),
-            'idle_warning_cta' => __('Ναι, συνέχισε', 'cik-prize-wheel'),
+            'idle_warning_title' => __('Are you still there?', 'cik-prize-wheel'),
+            /* translators: %d: seconds until the kiosk resets. */
+            'idle_warning_body' => __('The screen will return to the start in %d seconds.', 'cik-prize-wheel'),
+            'idle_warning_cta' => __('Yes, continue', 'cik-prize-wheel'),
 
             // KEYBOARD
-            'keyboard_greek' => __('ΕΛ', 'cik-prize-wheel'),
-            'keyboard_latin' => __('EN', 'cik-prize-wheel'),
-            'keyboard_numeric' => __('123', 'cik-prize-wheel'),
+            'keyboard_greek' => _x('EL', 'on-screen keyboard: Greek layout toggle', 'cik-prize-wheel'),
+            'keyboard_latin' => _x('EN', 'on-screen keyboard: Latin layout toggle', 'cik-prize-wheel'),
+            'keyboard_numeric' => _x('123', 'on-screen keyboard: numeric layout toggle', 'cik-prize-wheel'),
 
             // ERRORS
-            'error_generic' => __('Κάτι πήγε στραβά. Δοκίμασε ξανά.', 'cik-prize-wheel'),
-            'error_network' => __('Δεν υπάρχει σύνδεση. Κάλεσε κάποιον από το περίπτερο.', 'cik-prize-wheel'),
-            'error_required' => __('Το πεδίο είναι υποχρεωτικό.', 'cik-prize-wheel'),
-            'error_email' => __('Δώσε ένα έγκυρο email.', 'cik-prize-wheel'),
-            'error_phone' => __('Δώσε ένα έγκυρο τηλέφωνο (10 ψηφία).', 'cik-prize-wheel'),
-            'error_need' => __('Επίλεξε μια κατηγορία.', 'cik-prize-wheel'),
-            'error_no_spins' => __('Δεν έχεις άλλες προσπάθειες.', 'cik-prize-wheel'),
-            'error_not_configured' => __('Η εφαρμογή δεν έχει ρυθμιστεί ακόμη.', 'cik-prize-wheel'),
+            'error_generic' => __('Something went wrong. Please try again.', 'cik-prize-wheel'),
+            'error_network' => __('No connection. Please ask a member of the booth staff.', 'cik-prize-wheel'),
+            'error_required' => __('This field is required.', 'cik-prize-wheel'),
+            'error_email' => __('Please enter a valid email address.', 'cik-prize-wheel'),
+            'error_phone' => __('Please enter a valid phone number (10 digits).', 'cik-prize-wheel'),
+            'error_need' => __('Please choose a category.', 'cik-prize-wheel'),
+            'error_no_spins' => __('You have no spins left.', 'cik-prize-wheel'),
+            'error_not_configured' => __('The app has not been configured yet.', 'cik-prize-wheel'),
         ];
 
         /**
-         * Filter the Greek UI copy served to the kiosk.
+         * Filter the UI copy served to the kiosk.
          *
          * @param array $strings
          */

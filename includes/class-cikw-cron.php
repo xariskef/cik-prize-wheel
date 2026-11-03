@@ -34,7 +34,7 @@ final class CIKW_Cron
     {
         $schedules[self::INTERVAL] = [
             'interval' => 5 * MINUTE_IN_SECONDS,
-            'display' => __('Κάθε 5 λεπτά (Prize Wheel Kiosk)', 'cik-prize-wheel'),
+            'display' => __('Every 5 minutes (Prize Wheel Kiosk)', 'cik-prize-wheel'),
         ];
 
         return $schedules;

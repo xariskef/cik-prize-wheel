@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /**
  * The confirmation email (spec section 8).
  *
- * Responsive HTML with a plain-text alternative, in Greek: thank you for
+ * Responsive HTML with a plain-text alternative: thank you for
  * visiting the stand, a recap of the category or categories the wheel landed
  * on, and - when they won - the prize and the voucher code to show at the
  * stand.
@@ -45,7 +45,7 @@ final class CIKW_Mailer
         );
 
         if (null === $entry) {
-            return new WP_Error('cikw_entry_not_found', __('Η συμμετοχή δεν βρέθηκε.', 'cik-prize-wheel'));
+            return new WP_Error('cikw_entry_not_found', __('Entry not found.', 'cik-prize-wheel'));
         }
 
         if (!$force && 'sent' === $entry['email_status']) {
@@ -53,9 +53,9 @@ final class CIKW_Mailer
         }
 
         if ('' === (string) $entry['email'] || !is_email($entry['email'])) {
-            self::mark_failed($entry_id, (int) $entry['email_attempts'] + 1, __('Μη έγκυρη διεύθυνση email.', 'cik-prize-wheel'));
+            self::mark_failed($entry_id, (int) $entry['email_attempts'] + 1, __('Invalid email address.', 'cik-prize-wheel'));
 
-            return new WP_Error('cikw_invalid_email', __('Μη έγκυρη διεύθυνση email.', 'cik-prize-wheel'));
+            return new WP_Error('cikw_invalid_email', __('Invalid email address.', 'cik-prize-wheel'));
         }
 
         $spins = self::spins_for_entry($entry_id);
@@ -147,7 +147,7 @@ final class CIKW_Mailer
             return (string) $phpmailer->ErrorInfo;
         }
 
-        return __('Η αποστολή απέτυχε χωρίς περιγραφή σφάλματος.', 'cik-prize-wheel');
+        return __('Sending failed without an error description.', 'cik-prize-wheel');
     }
 
     /**
@@ -204,18 +204,18 @@ final class CIKW_Mailer
             '{category_recap}' => $categories
                 ? sprintf(
                     /* translators: %s: category names. */
-                    __('Ο τροχός σε έφερε στην κατηγορία: %s', 'cik-prize-wheel'),
+                    __('The wheel landed on: %s', 'cik-prize-wheel'),
                     implode(', ', array_unique($categories))
                 )
                 : '',
             '{prize_details}' => $prizes
                 ? sprintf(
                     /* translators: 1: prize titles, 2: voucher codes. */
-                    __('Κέρδισες: %1$s. Κωδικός: %2$s', 'cik-prize-wheel'),
+                    __('You won: %1$s. Code: %2$s', 'cik-prize-wheel'),
                     implode(', ', $prizes),
                     implode(', ', $vouchers)
                 )
-                : __('Δεν κέρδισες δώρο αυτή τη φορά, αλλά χαρήκαμε που σε γνωρίσαμε.', 'cik-prize-wheel'),
+                : __('You did not win a prize this time, but it was great to meet you.', 'cik-prize-wheel'),
             '{voucher_codes}' => implode(', ', $vouchers),
         ];
 
@@ -234,7 +234,7 @@ final class CIKW_Mailer
         ob_start();
         ?>
 <!DOCTYPE html>
-<html lang="el">
+<html lang="<?php echo esc_attr(get_bloginfo('language')); ?>">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -247,7 +247,7 @@ final class CIKW_Mailer
 
         <tr><td style="background:#04121f;padding:28px 24px;text-align:center;">
             <div style="font-size:26px;font-weight:bold;color:#ffffff;letter-spacing:1px;"><?php echo esc_html(get_bloginfo('name')); ?></div>
-            <div style="font-size:15px;color:#9db4c7;margin-top:6px;"><?php echo esc_html__('Γύρνα τον τροχό & κέρδισε', 'cik-prize-wheel'); ?></div>
+            <div style="font-size:15px;color:#9db4c7;margin-top:6px;"><?php echo esc_html__('Spin the wheel & win', 'cik-prize-wheel'); ?></div>
         </td></tr>
 
         <tr><td style="padding:28px 24px 8px;">
@@ -255,7 +255,7 @@ final class CIKW_Mailer
                 <?php
                 printf(
                     /* translators: %s: participant name. */
-                    esc_html__('Γεια σου %s,', 'cik-prize-wheel'),
+                    esc_html__('Hi %s,', 'cik-prize-wheel'),
                     esc_html((string) $entry['full_name'])
                 );
                 ?>
@@ -273,7 +273,7 @@ final class CIKW_Mailer
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f5f7;border-radius:10px;">
                     <tr><td style="padding:16px 18px;">
                         <div style="font-size:13px;color:#5b6b7a;text-transform:uppercase;letter-spacing:1px;">
-                            <?php echo esc_html__('Η κατηγορία σου', 'cik-prize-wheel'); ?>
+                            <?php echo esc_html__('Your category', 'cik-prize-wheel'); ?>
                         </div>
                         <div style="font-size:18px;font-weight:bold;color:#0b6fb4;margin-top:4px;">
                             <?php echo esc_html((string) $spin['category_name']); ?>
@@ -293,7 +293,7 @@ final class CIKW_Mailer
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #f58220;border-radius:10px;">
                     <tr><td style="padding:20px 18px;text-align:center;">
                         <div style="font-size:20px;font-weight:bold;color:#f58220;">
-                            <?php echo esc_html__('Κέρδισες!', 'cik-prize-wheel'); ?>
+                            <?php echo esc_html__('You won!', 'cik-prize-wheel'); ?>
                         </div>
                         <?php $image = CIKW_Config::image_url($spin['prize_image_id'], 'medium'); ?>
                         <?php if ($image) : ?>
@@ -308,13 +308,13 @@ final class CIKW_Mailer
                             </div>
                         <?php endif; ?>
                         <div style="font-size:13px;color:#5b6b7a;text-transform:uppercase;letter-spacing:1px;margin-top:16px;">
-                            <?php echo esc_html__('Ο κωδικός σου', 'cik-prize-wheel'); ?>
+                            <?php echo esc_html__('Your code', 'cik-prize-wheel'); ?>
                         </div>
                         <div style="display:inline-block;margin-top:8px;padding:12px 26px;background:#04121f;color:#ffffff;border-radius:8px;font-size:28px;font-weight:bold;letter-spacing:5px;">
                             <?php echo esc_html((string) $spin['voucher_code']); ?>
                         </div>
                         <div style="font-size:14px;color:#3d4a57;margin-top:14px;line-height:1.6;">
-                            <?php echo esc_html__('Δείξε τον κωδικό στο περίπτερο για να παραλάβεις το δώρο σου.', 'cik-prize-wheel'); ?>
+                            <?php echo esc_html__('Show this code at the booth to collect your prize.', 'cik-prize-wheel'); ?>
                         </div>
                     </td></tr>
                 </table>
@@ -323,7 +323,7 @@ final class CIKW_Mailer
 
         <tr><td style="padding:20px 24px 30px;">
             <p style="margin:0;font-size:15px;line-height:1.6;color:#3d4a57;">
-                <?php echo esc_html__('Ευχαριστούμε που επισκέφθηκες το περίπτερό μας. Καλή συνέχεια στην έκθεση!', 'cik-prize-wheel'); ?>
+                <?php echo esc_html__('Thanks for visiting our booth. Enjoy the rest of the event!', 'cik-prize-wheel'); ?>
             </p>
         </td></tr>
 
@@ -331,7 +331,7 @@ final class CIKW_Mailer
             <?php echo esc_html(get_bloginfo('name')); ?>
             <?php if (!empty($options['privacy_policy_url'])) : ?>
                 <br /><a href="<?php echo esc_url((string) $options['privacy_policy_url']); ?>" style="color:#0b6fb4;">
-                    <?php echo esc_html__('Πολιτική απορρήτου', 'cik-prize-wheel'); ?>
+                    <?php echo esc_html__('Privacy policy', 'cik-prize-wheel'); ?>
                 </a>
             <?php endif; ?>
         </td></tr>
@@ -354,7 +354,7 @@ final class CIKW_Mailer
         $lines = [];
         $lines[] = sprintf(
             /* translators: %s: participant name. */
-            __('Γεια σου %s,', 'cik-prize-wheel'),
+            __('Hi %s,', 'cik-prize-wheel'),
             (string) $entry['full_name']
         );
         $lines[] = '';
@@ -367,7 +367,7 @@ final class CIKW_Mailer
             }
 
             $lines[] = str_repeat('-', 48);
-            $lines[] = __('Η κατηγορία σου:', 'cik-prize-wheel') . ' ' . $spin['category_name'];
+            $lines[] = __('Your category:', 'cik-prize-wheel') . ' ' . $spin['category_name'];
 
             if (!empty($spin['category_description'])) {
                 $lines[] = (string) $spin['category_description'];
@@ -375,26 +375,26 @@ final class CIKW_Mailer
 
             if ('win' === $spin['outcome']) {
                 $lines[] = '';
-                $lines[] = __('ΚΕΡΔΙΣΕΣ:', 'cik-prize-wheel') . ' ' . $spin['prize_title'];
+                $lines[] = __('YOU WON:', 'cik-prize-wheel') . ' ' . $spin['prize_title'];
 
                 if (!empty($spin['prize_description'])) {
                     $lines[] = (string) $spin['prize_description'];
                 }
 
-                $lines[] = __('Κωδικός:', 'cik-prize-wheel') . ' ' . $spin['voucher_code'];
-                $lines[] = __('Δείξε τον κωδικό στο περίπτερο για να παραλάβεις το δώρο σου.', 'cik-prize-wheel');
+                $lines[] = __('Code:', 'cik-prize-wheel') . ' ' . $spin['voucher_code'];
+                $lines[] = __('Show this code at the booth to collect your prize.', 'cik-prize-wheel');
             }
 
             $lines[] = '';
         }
 
         $lines[] = str_repeat('-', 48);
-        $lines[] = __('Ευχαριστούμε που επισκέφθηκες το περίπτερό μας. Καλή συνέχεια στην έκθεση!', 'cik-prize-wheel');
+        $lines[] = __('Thanks for visiting our booth. Enjoy the rest of the event!', 'cik-prize-wheel');
         $lines[] = '';
         $lines[] = get_bloginfo('name');
 
         if (!empty($options['privacy_policy_url'])) {
-            $lines[] = __('Πολιτική απορρήτου:', 'cik-prize-wheel') . ' ' . $options['privacy_policy_url'];
+            $lines[] = __('Privacy policy:', 'cik-prize-wheel') . ' ' . $options['privacy_policy_url'];
         }
 
         return implode("\n", $lines);

@@ -1,4 +1,12 @@
-(function ($) {
+(function ($, i18n) {
+    function format(template, values) {
+        return template
+            .replace(/%(\d)\$s/g, function (match, index) {
+                return values[index - 1];
+            })
+            .replace(/%%/g, '%');
+    }
+
     function updateOrders($body) {
         $body.children('tr').each(function (index) {
             $(this).find('.cikw-order').val(index + 1);
@@ -25,11 +33,11 @@
         });
 
         var noWin = Math.max(0, 100 - sum);
-        var text = 'Σύνολο ' + formatPercent(sum) + '% - Καμία νίκη ' + formatPercent(noWin) + '%';
+        var text = format(i18n.summary, [formatPercent(sum), formatPercent(noWin)]);
 
         $summary.toggleClass('cikw-summary-error', sum > 100);
         if (sum > 100) {
-            text += ' Υπέρβαση ορίου';
+            text += ' ' + i18n.overLimit;
         }
 
         $summary.text(text);
@@ -63,8 +71,8 @@
             var targetId = $(this).data('target');
             var $target = $('#' + targetId);
             var frame = wp.media({
-                title: 'Επιλογή εικόνας',
-                button: { text: 'Χρήση εικόνας' },
+                title: i18n.mediaTitle,
+                button: { text: i18n.mediaButton },
                 multiple: false
             });
 
@@ -76,4 +84,9 @@
             frame.open();
         });
     });
-})(jQuery);
+})(jQuery, window.cikwAdmin || {
+    summary: 'Total %1$s%% - No win %2$s%%',
+    overLimit: 'Over the limit',
+    mediaTitle: 'Select image',
+    mediaButton: 'Use image'
+});

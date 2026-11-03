@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Έκθεση → Εργαλεία δοκιμών.
+ * Prize Wheel > Test tools.
  *
  * Everything tools/seed-demo-data.php does, but from wp-admin - the show is
  * deployed to managed hosting where there may be no shell access.
@@ -34,8 +34,8 @@ final class CIKW_Admin_Tools
     {
         add_submenu_page(
             'cikw-dashboard',
-            __('Εργαλεία δοκιμών', 'cik-prize-wheel'),
-            __('Εργαλεία δοκιμών', 'cik-prize-wheel'),
+            __('Test tools', 'cik-prize-wheel'),
+            __('Test tools', 'cik-prize-wheel'),
             'manage_options',
             'cikw-tools',
             [$this, 'render_page']
@@ -50,10 +50,10 @@ final class CIKW_Admin_Tools
         $real_entries = $counts['entries'] - $counts['demo_entries'];
 
         echo '<div class="wrap cikw-admin-page">';
-        echo '<h1>' . esc_html__('Εργαλεία δοκιμών', 'cik-prize-wheel') . '</h1>';
+        echo '<h1>' . esc_html__('Test tools', 'cik-prize-wheel') . '</h1>';
 
-        echo '<div class="notice notice-warning"><p><strong>' . esc_html__('Μόνο για δοκιμές.', 'cik-prize-wheel') . '</strong> ';
-        echo esc_html__('Μη χρησιμοποιείτε αυτή τη σελίδα κατά τη διάρκεια της έκθεσης. Οι ενέργειες διαγράφουν δεδομένα οριστικά.', 'cik-prize-wheel');
+        echo '<div class="notice notice-warning"><p><strong>' . esc_html__('For testing only.', 'cik-prize-wheel') . '</strong> ';
+        echo esc_html__('Do not use this page while the event is running. These actions permanently delete data.', 'cik-prize-wheel');
         echo '</p></div>';
 
         $this->render_message_notice();
@@ -62,7 +62,7 @@ final class CIKW_Admin_Tools
             echo '<div class="notice notice-error"><p>';
             printf(
                 /* translators: %d: number of real participant entries. */
-                esc_html__('Προσοχή: υπάρχουν %d πραγματικές συμμετοχές στη βάση. Οι ενέργειες επαναφοράς και ολικής διαγραφής θα τις σβήσουν.', 'cik-prize-wheel'),
+                esc_html__('Warning: there are %d real entries in the database. The reset and delete-everything actions will remove them.', 'cik-prize-wheel'),
                 (int) $real_entries
             );
             echo '</p></div>';
@@ -81,18 +81,18 @@ final class CIKW_Admin_Tools
 
     private function render_status(array $counts, int $real_entries): void
     {
-        echo '<h2>' . esc_html__('Κατάσταση', 'cik-prize-wheel') . '</h2>';
+        echo '<h2>' . esc_html__('Status', 'cik-prize-wheel') . '</h2>';
         echo '<table class="widefat striped" style="max-width:620px">';
         echo '<tbody>';
 
         $rows = [
-            __('Κατηγορίες', 'cik-prize-wheel') => $counts['categories'],
-            __('Δώρα', 'cik-prize-wheel') => $counts['prizes'],
-            __('Συμμετοχές (σύνολο)', 'cik-prize-wheel') => $counts['entries'],
-            __('— από αυτές εικονικές', 'cik-prize-wheel') => $counts['demo_entries'],
-            __('— από αυτές πραγματικές', 'cik-prize-wheel') => $real_entries,
-            __('Περιστροφές', 'cik-prize-wheel') => $counts['spins'],
-            __('Κερδισμένα δώρα', 'cik-prize-wheel') => $counts['wins'],
+            __('Categories', 'cik-prize-wheel') => $counts['categories'],
+            __('Prizes', 'cik-prize-wheel') => $counts['prizes'],
+            __('Entries (total)', 'cik-prize-wheel') => $counts['entries'],
+            __('- of which simulated', 'cik-prize-wheel') => $counts['demo_entries'],
+            __('- of which real', 'cik-prize-wheel') => $real_entries,
+            __('Spins', 'cik-prize-wheel') => $counts['spins'],
+            __('Prizes won', 'cik-prize-wheel') => $counts['wins'],
         ];
 
         foreach ($rows as $label => $value) {
@@ -100,7 +100,7 @@ final class CIKW_Admin_Tools
         }
 
         if ($counts['spins'] > 0) {
-            echo '<tr><td>' . esc_html__('Ποσοστό νίκης', 'cik-prize-wheel') . '</td><td><strong>';
+            echo '<tr><td>' . esc_html__('Win rate', 'cik-prize-wheel') . '</td><td><strong>';
             echo esc_html(number_format(100 * $counts['wins'] / $counts['spins'], 1) . '%');
             echo '</strong></td></tr>';
         }
@@ -110,13 +110,13 @@ final class CIKW_Admin_Tools
 
     private function render_wheel_section(array $counts): void
     {
-        echo '<h2>' . esc_html__('Δεδομένα τροχού', 'cik-prize-wheel') . '</h2>';
+        echo '<h2>' . esc_html__('Wheel data', 'cik-prize-wheel') . '</h2>';
 
         if (0 === $counts['categories']) {
-            echo '<p>' . esc_html__('Ο τροχός είναι άδειος. Φορτώστε το demo dataset για να ξεκινήσετε.', 'cik-prize-wheel') . '</p>';
+            echo '<p>' . esc_html__('The wheel is empty. Load the demo dataset to get started.', 'cik-prize-wheel') . '</p>';
             $this->render_action_button(
                 'cikw_seed_demo_data',
-                __('Φόρτωση demo δεδομένων (12 κατηγορίες, 48 δώρα)', 'cik-prize-wheel'),
+                __('Load demo data (12 categories, 48 prizes)', 'cik-prize-wheel'),
                 'button-primary'
             );
 
@@ -126,7 +126,7 @@ final class CIKW_Admin_Tools
         echo '<p>';
         printf(
             /* translators: 1: category count, 2: prize count. */
-            esc_html__('Ο τροχός έχει ήδη %1$d κατηγορίες και %2$d δώρα. Η επαναφορά τα διαγράφει όλα, μαζί με τις συμμετοχές και τις περιστροφές, και ξαναφορτώνει το demo dataset από την αρχή.', 'cik-prize-wheel'),
+            esc_html__('The wheel already has %1$d categories and %2$d prizes. Resetting deletes them all, together with entries and spins, and reloads the demo dataset from scratch.', 'cik-prize-wheel'),
             (int) $counts['categories'],
             (int) $counts['prizes']
         );
@@ -134,21 +134,21 @@ final class CIKW_Admin_Tools
 
         $this->render_action_button(
             'cikw_reset_wheel',
-            __('Επαναφορά τροχού & επαναφόρτωση demo δεδομένων', 'cik-prize-wheel'),
+            __('Reset wheel & reload demo data', 'cik-prize-wheel'),
             'button-secondary',
-            __('Θα διαγραφούν ΟΛΕΣ οι κατηγορίες, τα δώρα, οι συμμετοχές και οι περιστροφές. Συνέχεια;', 'cik-prize-wheel'),
+            __('ALL categories, prizes, entries and spins will be deleted. Continue?', 'cik-prize-wheel'),
             true
         );
     }
 
     private function render_visitors_section(array $counts): void
     {
-        echo '<h2>' . esc_html__('Εικονικές συμμετοχές', 'cik-prize-wheel') . '</h2>';
-        echo '<p>' . esc_html__('Δημιουργεί εικονικούς επισκέπτες και τους περνά από την πραγματική μηχανή κλήρωσης, ώστε να προκύψουν αληθινές περιστροφές, κωδικοί δώρων και αρχεία ελέγχου.', 'cik-prize-wheel') . '</p>';
-        echo '<p class="description">' . esc_html__('Τα εικονικά email είναι @example.test και σημειώνονται ως “skipped”, οπότε δεν πρόκειται ποτέ να σταλεί email σε αυτά.', 'cik-prize-wheel') . '</p>';
+        echo '<h2>' . esc_html__('Simulated entries', 'cik-prize-wheel') . '</h2>';
+        echo '<p>' . esc_html__('Creates simulated visitors and runs them through the real spin engine, producing genuine spins, voucher codes and decision logs.', 'cik-prize-wheel') . '</p>';
+        echo '<p class="description">' . esc_html__('Simulated addresses use @example.test and are marked "skipped", so no email is ever sent to them.', 'cik-prize-wheel') . '</p>';
 
         if (0 === $counts['categories']) {
-            echo '<p><em>' . esc_html__('Φορτώστε πρώτα δεδομένα στον τροχό.', 'cik-prize-wheel') . '</em></p>';
+            echo '<p><em>' . esc_html__('Load wheel data first.', 'cik-prize-wheel') . '</em></p>';
 
             return;
         }
@@ -156,16 +156,16 @@ final class CIKW_Admin_Tools
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" style="margin:12px 0">';
         wp_nonce_field('cikw_simulate_visitors');
         echo '<input type="hidden" name="action" value="cikw_simulate_visitors" />';
-        echo '<label>' . esc_html__('Πλήθος επισκεπτών', 'cik-prize-wheel') . ' ';
+        echo '<label>' . esc_html__('Number of visitors', 'cik-prize-wheel') . ' ';
         printf(
             '<input type="number" name="visitor_count" value="50" min="1" max="%1$d" class="small-text" /></label> ',
             (int) self::MAX_SIMULATED_VISITORS
         );
-        submit_button(__('Δημιουργία', 'cik-prize-wheel'), 'button-primary', 'submit', false);
+        submit_button(__('Create', 'cik-prize-wheel'), 'button-primary', 'submit', false);
         echo '<p class="description">';
         printf(
             /* translators: %d: maximum simulated visitors per run. */
-            esc_html__('Μέγιστο %d ανά εκτέλεση, ώστε να μη λήξει το χρονικό όριο του αιτήματος. Τρέξτε το ξανά για περισσότερους.', 'cik-prize-wheel'),
+            esc_html__('Maximum %d per run, so the request does not time out. Run it again for more.', 'cik-prize-wheel'),
             (int) self::MAX_SIMULATED_VISITORS
         );
         echo '</p>';
@@ -176,32 +176,32 @@ final class CIKW_Admin_Tools
                 'cikw_delete_demo_entries',
                 sprintf(
                     /* translators: %d: number of simulated entries. */
-                    __('Διαγραφή %d εικονικών συμμετοχών', 'cik-prize-wheel'),
+                    __('Delete %d simulated entries', 'cik-prize-wheel'),
                     (int) $counts['demo_entries']
                 ),
                 'button-secondary',
-                __('Θα διαγραφούν μόνο οι εικονικές συμμετοχές. Οι πραγματικές δεν θα πειραχθούν. Συνέχεια;', 'cik-prize-wheel')
+                __('Only simulated entries will be deleted. Real entries are not touched. Continue?', 'cik-prize-wheel')
             );
-            echo '<p class="description">' . esc_html__('Ασφαλές: αφορά μόνο εγγραφές με device_id “demo-seed”.', 'cik-prize-wheel') . '</p>';
+            echo '<p class="description">' . esc_html__('Safe: only affects rows with device_id "demo-seed".', 'cik-prize-wheel') . '</p>';
         }
     }
 
     private function render_stock_section(): void
     {
-        echo '<h2>' . esc_html__('Απόθεμα δώρων', 'cik-prize-wheel') . '</h2>';
-        echo '<p>' . esc_html__('Επαναφέρει το υπόλοιπο κάθε δώρου στο συνολικό του απόθεμα, χωρίς να διαγράψει συμμετοχές. Χρήσιμο μετά από μια δοκιμαστική εκτέλεση.', 'cik-prize-wheel') . '</p>';
+        echo '<h2>' . esc_html__('Prize stock', 'cik-prize-wheel') . '</h2>';
+        echo '<p>' . esc_html__('Resets every prize’s remaining stock to its total, without deleting entries. Useful after a dry run.', 'cik-prize-wheel') . '</p>';
 
         $this->render_action_button(
             'cikw_reset_all_stock',
-            __('Επαναφορά αποθέματος σε όλα τα δώρα', 'cik-prize-wheel'),
+            __('Reset stock on all prizes', 'cik-prize-wheel'),
             'button-secondary',
-            __('Θα επαναφερθεί το υπόλοιπο όλων των δώρων στο σύνολό τους. Συνέχεια;', 'cik-prize-wheel')
+            __('Remaining stock on every prize will be reset to its total. Continue?', 'cik-prize-wheel')
         );
     }
 
     private function render_keys_section(): void
     {
-        echo '<h2>' . esc_html__('Κλειδιά & endpoints', 'cik-prize-wheel') . '</h2>';
+        echo '<h2>' . esc_html__('Keys & endpoints', 'cik-prize-wheel') . '</h2>';
         echo '<table class="form-table" role="presentation"><tbody>';
 
         $fields = [
@@ -217,13 +217,13 @@ final class CIKW_Admin_Tools
         }
 
         echo '</tbody></table>';
-        echo '<p class="description">' . esc_html__('Το kiosk key ταξιδεύει μέσα στη σελίδα του kiosk και δεν είναι μυστικό. Το staff key, που χρειάζεται για την εξαργύρωση, δεν εμφανίζεται πουθενά δημόσια.', 'cik-prize-wheel') . '</p>';
+        echo '<p class="description">' . esc_html__('The kiosk key ships inside the kiosk page and is not a secret. The staff key, required for redemption, is never shown publicly.', 'cik-prize-wheel') . '</p>';
     }
 
     private function render_edge_cases(): void
     {
-        echo '<h2>' . esc_html__('Τι να προσέξετε στο demo dataset', 'cik-prize-wheel') . '</h2>';
-        echo '<p>' . esc_html__('Τα δεδομένα είναι σκόπιμα ανομοιόμορφα, ώστε μια δοκιμή να περνά από κάθε διαδρομή της μηχανής:', 'cik-prize-wheel') . '</p>';
+        echo '<h2>' . esc_html__('What to look for in the demo dataset', 'cik-prize-wheel') . '</h2>';
+        echo '<p>' . esc_html__('The data is deliberately uneven, so a dry run exercises every branch of the engine:', 'cik-prize-wheel') . '</p>';
         echo '<ul class="ul-disc">';
 
         foreach (CIKW_Demo_Data::edge_case_notes() as $note) {
@@ -236,14 +236,14 @@ final class CIKW_Admin_Tools
     private function render_danger_section(): void
     {
         echo '<hr />';
-        echo '<h2 style="color:#b32d2e">' . esc_html__('Ολική διαγραφή', 'cik-prize-wheel') . '</h2>';
-        echo '<p>' . esc_html__('Διαγράφει κατηγορίες, δώρα, συμμετοχές και περιστροφές, χωρίς να ξαναφορτώσει τίποτα. Ο τροχός μένει άδειος.', 'cik-prize-wheel') . '</p>';
+        echo '<h2 style="color:#b32d2e">' . esc_html__('Delete everything', 'cik-prize-wheel') . '</h2>';
+        echo '<p>' . esc_html__('Deletes categories, prizes, entries and spins without reloading anything. The wheel is left empty.', 'cik-prize-wheel') . '</p>';
 
         $this->render_action_button(
             'cikw_wipe_all',
-            __('Διαγραφή όλων των δεδομένων', 'cik-prize-wheel'),
+            __('Delete all data', 'cik-prize-wheel'),
             'button-link-delete',
-            __('Θα διαγραφούν ΟΛΑ τα δεδομένα του τροχού, μαζί με τις πραγματικές συμμετοχές. Η ενέργεια δεν αναιρείται. Συνέχεια;', 'cik-prize-wheel'),
+            __('ALL wheel data will be deleted, including real entries. This cannot be undone. Continue?', 'cik-prize-wheel'),
             true
         );
     }
@@ -268,7 +268,7 @@ final class CIKW_Admin_Tools
 
         if ($guard) {
             echo '<p><label><input type="checkbox" name="confirm_destructive" value="1" /> ';
-            echo esc_html__('Καταλαβαίνω ότι θα διαγραφούν δεδομένα οριστικά.', 'cik-prize-wheel');
+            echo esc_html__('I understand that data will be permanently deleted.', 'cik-prize-wheel');
             echo '</label></p>';
         }
 
@@ -412,7 +412,7 @@ final class CIKW_Admin_Tools
                 $type = 'success';
                 $text = sprintf(
                     /* translators: 1: category count, 2: prize count. */
-                    __('Φορτώθηκαν %1$d κατηγορίες και %2$d δώρα.', 'cik-prize-wheel'),
+                    __('Loaded %1$d categories and %2$d prizes.', 'cik-prize-wheel'),
                     $categories,
                     $prizes
                 );
@@ -420,14 +420,14 @@ final class CIKW_Admin_Tools
 
             case 'already_seeded':
                 $type = 'info';
-                $text = __('Ο τροχός έχει ήδη δεδομένα. Δεν άλλαξε τίποτα.', 'cik-prize-wheel');
+                $text = __('The wheel already has data. Nothing was changed.', 'cik-prize-wheel');
                 break;
 
             case 'simulated':
                 $type = 'success';
                 $text = sprintf(
                     /* translators: 1: visitors, 2: spins, 3: wins. */
-                    __('Δημιουργήθηκαν %1$d εικονικοί επισκέπτες, %2$d περιστροφές, %3$d κερδισμένα δώρα.', 'cik-prize-wheel'),
+                    __('Created %1$d simulated visitors, %2$d spins, %3$d prizes won.', 'cik-prize-wheel'),
                     $visitors,
                     $spins,
                     $wins
@@ -438,7 +438,7 @@ final class CIKW_Admin_Tools
                 $type = 'success';
                 $text = sprintf(
                     /* translators: %d: number of entries deleted. */
-                    __('Διαγράφηκαν %d εικονικές συμμετοχές.', 'cik-prize-wheel'),
+                    __('Deleted %d simulated entries.', 'cik-prize-wheel'),
                     $deleted
                 );
                 break;
@@ -447,19 +447,19 @@ final class CIKW_Admin_Tools
                 $type = 'success';
                 $text = sprintf(
                     /* translators: %d: number of prizes updated. */
-                    __('Επαναφέρθηκε το απόθεμα σε %d δώρα.', 'cik-prize-wheel'),
+                    __('Stock reset on %d prizes.', 'cik-prize-wheel'),
                     $updated
                 );
                 break;
 
             case 'wiped':
                 $type = 'success';
-                $text = __('Όλα τα δεδομένα διαγράφηκαν.', 'cik-prize-wheel');
+                $text = __('All data deleted.', 'cik-prize-wheel');
                 break;
 
             case 'not_confirmed':
                 $type = 'error';
-                $text = __('Δεν επιβεβαιώσατε την ενέργεια. Δεν άλλαξε τίποτα.', 'cik-prize-wheel');
+                $text = __('The action was not confirmed. Nothing was changed.', 'cik-prize-wheel');
                 break;
 
             default:
@@ -481,7 +481,7 @@ final class CIKW_Admin_Tools
     private function require_manager(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
     }
 }

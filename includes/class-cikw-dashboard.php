@@ -27,7 +27,7 @@ final class CIKW_Dashboard
 
         wp_add_dashboard_widget(
             'cikw_dashboard_widget',
-            __('Έκθεση — ζωντανή εικόνα', 'cik-prize-wheel'),
+            __('Prize Wheel - live overview', 'cik-prize-wheel'),
             [$this, 'render']
         );
     }
@@ -136,19 +136,19 @@ final class CIKW_Dashboard
         echo '<div class="cikw-dashboard">';
 
         echo '<ul style="margin:0 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;">';
-        $this->stat(__('Συμμετοχές σήμερα', 'cik-prize-wheel'), (string) $entries_today);
-        $this->stat(__('Συμμετοχές σύνολο', 'cik-prize-wheel'), (string) $entries_total);
-        $this->stat(__('Περιστροφές σήμερα', 'cik-prize-wheel'), (string) $spins_today);
-        $this->stat(__('Δώρα σήμερα', 'cik-prize-wheel'), (string) $wins_today);
-        $this->stat(__('Ανεξαργύρωτα δώρα', 'cik-prize-wheel'), (string) $unredeemed);
-        $this->stat(__('Email σε αναμονή', 'cik-prize-wheel'), (string) $pending_emails);
+        $this->stat(__('Entries today', 'cik-prize-wheel'), (string) $entries_today);
+        $this->stat(__('Entries total', 'cik-prize-wheel'), (string) $entries_total);
+        $this->stat(__('Spins today', 'cik-prize-wheel'), (string) $spins_today);
+        $this->stat(__('Prizes today', 'cik-prize-wheel'), (string) $wins_today);
+        $this->stat(__('Unredeemed prizes', 'cik-prize-wheel'), (string) $unredeemed);
+        $this->stat(__('Emails pending', 'cik-prize-wheel'), (string) $pending_emails);
         echo '</ul>';
 
         if ($failed_emails > 0) {
             echo '<div class="notice notice-error inline" style="margin:0 0 12px;padding:6px 10px;"><p style="margin:0;">';
             printf(
                 /* translators: %d: number of failed emails. */
-                esc_html__('%d email απέτυχαν οριστικά. Δείτε τις Συμμετοχές.', 'cik-prize-wheel'),
+                esc_html__('%d email(s) failed permanently. See Entries.', 'cik-prize-wheel'),
                 $failed_emails
             );
             echo '</p></div>';
@@ -157,7 +157,7 @@ final class CIKW_Dashboard
         // Last activity is the tell-tale: if the kiosk has crashed or lost
         // the network, this stops moving while the screen still looks fine.
         echo '<p style="margin:0 0 12px;">';
-        echo '<strong>' . esc_html__('Τελευταία δραστηριότητα:', 'cik-prize-wheel') . '</strong> ';
+        echo '<strong>' . esc_html__('Last activity:', 'cik-prize-wheel') . '</strong> ';
 
         if ($last_activity) {
             $ago = human_time_diff(
@@ -166,25 +166,25 @@ final class CIKW_Dashboard
             );
             printf(
                 /* translators: 1: timestamp, 2: human readable time difference. */
-                esc_html__('%1$s (πριν %2$s)', 'cik-prize-wheel'),
+                esc_html__('%1$s (%2$s ago)', 'cik-prize-wheel'),
                 esc_html(mysql2date('d/m/Y H:i', (string) $last_activity)),
                 esc_html($ago)
             );
         } else {
-            echo esc_html__('καμία ακόμη', 'cik-prize-wheel');
+            echo esc_html__('none yet', 'cik-prize-wheel');
         }
 
         echo '</p>';
 
         if ($pending_emails > 0) {
             echo '<p style="margin:0 0 12px;">';
-            echo '<strong>' . esc_html__('Τελευταία αποστολή email:', 'cik-prize-wheel') . '</strong> ';
+            echo '<strong>' . esc_html__('Last email run:', 'cik-prize-wheel') . '</strong> ';
             echo esc_html(
                 $snapshot['last_queue_run']
                     ? mysql2date('d/m/Y H:i', (string) $snapshot['last_queue_run'])
-                    : __('ποτέ', 'cik-prize-wheel')
+                    : __('never', 'cik-prize-wheel')
             );
-            echo '<br /><small>' . esc_html__('Αν μένει πίσω ενώ υπάρχουν email σε αναμονή, το WP-Cron δεν τρέχει: χρησιμοποιήστε wp cikw flush-emails.', 'cik-prize-wheel') . '</small>';
+            echo '<br /><small>' . esc_html__('If this falls behind while emails are pending, WP-Cron is not running: use wp cikw flush-emails.', 'cik-prize-wheel') . '</small>';
             echo '</p>';
         }
 
@@ -192,9 +192,9 @@ final class CIKW_Dashboard
 
         echo '<p style="margin:12px 0 0;">';
         echo '<a class="button button-primary" href="' . esc_url(admin_url('admin.php?page=cikw-entries')) . '">'
-            . esc_html__('Συμμετοχές', 'cik-prize-wheel') . '</a> ';
+            . esc_html__('Entries', 'cik-prize-wheel') . '</a> ';
         echo '<a class="button" href="' . esc_url(admin_url('admin.php?page=cikw-prizes')) . '">'
-            . esc_html__('Δώρα', 'cik-prize-wheel') . '</a>';
+            . esc_html__('Prizes', 'cik-prize-wheel') . '</a>';
         echo '</p>';
 
         echo '</div>';
@@ -219,7 +219,7 @@ final class CIKW_Dashboard
             return;
         }
 
-        echo '<p style="margin:0 0 4px;"><strong>' . esc_html__('Απόθεμα δώρων (χαμηλότερα πρώτα)', 'cik-prize-wheel') . '</strong></p>';
+        echo '<p style="margin:0 0 4px;"><strong>' . esc_html__('Prize stock (lowest first)', 'cik-prize-wheel') . '</strong></p>';
         echo '<table class="widefat striped" style="margin:0;">';
         echo '<tbody>';
 

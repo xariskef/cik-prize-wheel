@@ -21,8 +21,8 @@ final class CIKW_Admin_Data
     {
         add_submenu_page(
             'cikw-dashboard',
-            __('Κατηγορίες', 'cik-prize-wheel'),
-            __('Κατηγορίες', 'cik-prize-wheel'),
+            __('Categories', 'cik-prize-wheel'),
+            __('Categories', 'cik-prize-wheel'),
             'manage_options',
             'cikw-categories',
             [$this, 'render_categories_page']
@@ -30,8 +30,8 @@ final class CIKW_Admin_Data
 
         add_submenu_page(
             'cikw-dashboard',
-            __('Δώρα', 'cik-prize-wheel'),
-            __('Δώρα', 'cik-prize-wheel'),
+            __('Prizes', 'cik-prize-wheel'),
+            __('Prizes', 'cik-prize-wheel'),
             'manage_options',
             'cikw-prizes',
             [$this, 'render_prizes_page']
@@ -50,6 +50,13 @@ final class CIKW_Admin_Data
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_style('cikw-admin', CIKW_PLUGIN_URL . 'assets/admin/admin.css', [], CIKW_VERSION);
         wp_enqueue_script('cikw-admin', CIKW_PLUGIN_URL . 'assets/admin/admin.js', ['jquery', 'jquery-ui-sortable'], CIKW_VERSION, true);
+        wp_localize_script('cikw-admin', 'cikwAdmin', [
+            /* translators: 1: sum of active prize probabilities, 2: remaining no-win share. Keep %% for a literal percent sign. */
+            'summary' => __('Total %1$s%% - No win %2$s%%', 'cik-prize-wheel'),
+            'overLimit' => __('Over the limit', 'cik-prize-wheel'),
+            'mediaTitle' => __('Select image', 'cik-prize-wheel'),
+            'mediaButton' => __('Use image', 'cik-prize-wheel'),
+        ]);
     }
 
     public function render_categories_page(): void
@@ -67,11 +74,11 @@ final class CIKW_Admin_Data
         }
 
         echo '<div class="wrap cikw-admin-page">';
-        echo '<h1>' . esc_html__('Κατηγορίες τροχού', 'cik-prize-wheel') . '</h1>';
+        echo '<h1>' . esc_html__('Wheel categories', 'cik-prize-wheel') . '</h1>';
         $this->render_message_notice();
 
         if ($has_weight_warning) {
-            echo '<div class="notice notice-warning"><p>' . esc_html__('Προσοχή: τουλάχιστον μία ενεργή κατηγορία έχει βάρος διαφορετικό από 1.000. Αν τα βάρη διαφέρουν από τα ίσα οπτικά τμήματα, ο τροχός μπορεί να φαίνεται παραπλανητικός.', 'cik-prize-wheel') . '</p></div>';
+            echo '<div class="notice notice-warning"><p>' . esc_html__('Warning: at least one active category has a weight other than 1.000. When weights differ while the wheel segments are drawn equal, the wheel can look misleading.', 'cik-prize-wheel') . '</p></div>';
         }
 
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
@@ -81,17 +88,17 @@ final class CIKW_Admin_Data
         echo '<thead><tr>';
         echo '<th class="cikw-col-handle"></th>';
         echo '<th>' . esc_html__('Slug', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Όνομα', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Περιγραφή', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Χρώμα', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Βάρος', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Εικόνα', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Ενεργή', 'cik-prize-wheel') . '</th>';
-        echo '<th>' . esc_html__('Ενέργειες', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Name', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Description', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Colour', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Weight', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Image', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Active', 'cik-prize-wheel') . '</th>';
+        echo '<th>' . esc_html__('Actions', 'cik-prize-wheel') . '</th>';
         echo '</tr></thead><tbody class="cikw-sortable-body">';
 
         if (empty($categories)) {
-            echo '<tr><td colspan="9">' . esc_html__('Δεν υπάρχουν ακόμη κατηγορίες.', 'cik-prize-wheel') . '</td></tr>';
+            echo '<tr><td colspan="9">' . esc_html__('No categories yet.', 'cik-prize-wheel') . '</td></tr>';
         }
 
         foreach ($categories as $index => $category) {
@@ -102,7 +109,7 @@ final class CIKW_Admin_Data
             );
 
             echo '<tr class="cikw-sortable-row">';
-            echo '<td class="cikw-drag-handle" aria-label="' . esc_attr__('Σύρετε για αλλαγή σειράς', 'cik-prize-wheel') . '">☰<input class="cikw-order" type="hidden" name="categories[' . esc_attr((string) $id) . '][segment_order]" value="' . esc_attr((string) ($index + 1)) . '" /></td>';
+            echo '<td class="cikw-drag-handle" aria-label="' . esc_attr__('Drag to reorder', 'cik-prize-wheel') . '">☰<input class="cikw-order" type="hidden" name="categories[' . esc_attr((string) $id) . '][segment_order]" value="' . esc_attr((string) ($index + 1)) . '" /></td>';
             echo '<td><input type="text" name="categories[' . esc_attr((string) $id) . '][slug]" value="' . esc_attr((string) $category['slug']) . '" /></td>';
             echo '<td><input type="text" name="categories[' . esc_attr((string) $id) . '][name]" value="' . esc_attr((string) $category['name']) . '" /></td>';
             echo '<td><textarea name="categories[' . esc_attr((string) $id) . '][description]" rows="3">' . esc_textarea((string) $category['description']) . '</textarea></td>';
@@ -110,24 +117,24 @@ final class CIKW_Admin_Data
             echo '<td><input type="number" step="0.001" min="0" name="categories[' . esc_attr((string) $id) . '][wheel_weight]" value="' . esc_attr((string) $category['wheel_weight']) . '" /></td>';
             echo '<td>' . $this->render_image_control('categories[' . $id . '][image_id]', (int) $category['image_id']) . '</td>';
             echo '<td><input type="checkbox" name="categories[' . esc_attr((string) $id) . '][is_active]" value="1" ' . checked((int) $category['is_active'], 1, false) . ' /></td>';
-            echo '<td><a class="button-link-delete" href="' . esc_url($delete_url) . '">' . esc_html__('Διαγραφή', 'cik-prize-wheel') . '</a></td>';
+            echo '<td><a class="button-link-delete" href="' . esc_url($delete_url) . '">' . esc_html__('Delete', 'cik-prize-wheel') . '</a></td>';
             echo '</tr>';
         }
 
         echo '</tbody></table>';
 
-        echo '<h2>' . esc_html__('Νέα κατηγορία', 'cik-prize-wheel') . '</h2>';
+        echo '<h2>' . esc_html__('New category', 'cik-prize-wheel') . '</h2>';
         echo '<div class="cikw-grid-form">';
         echo '<label>' . esc_html__('Slug', 'cik-prize-wheel') . '<input type="text" name="new_category[slug]" /></label>';
-        echo '<label>' . esc_html__('Όνομα', 'cik-prize-wheel') . '<input type="text" name="new_category[name]" /></label>';
-        echo '<label>' . esc_html__('Χρώμα', 'cik-prize-wheel') . '<input type="color" name="new_category[color]" value="#006eb6" /></label>';
-        echo '<label>' . esc_html__('Βάρος', 'cik-prize-wheel') . '<input type="number" step="0.001" min="0" name="new_category[wheel_weight]" value="1.000" /></label>';
-        echo '<label class="cikw-grid-wide">' . esc_html__('Περιγραφή', 'cik-prize-wheel') . '<textarea name="new_category[description]" rows="3"></textarea></label>';
-        echo '<label>' . esc_html__('Εικόνα', 'cik-prize-wheel') . $this->render_image_control('new_category[image_id]', 0) . '</label>';
-        echo '<label class="cikw-checkbox-label"><input type="checkbox" name="new_category[is_active]" value="1" checked /> ' . esc_html__('Ενεργή', 'cik-prize-wheel') . '</label>';
+        echo '<label>' . esc_html__('Name', 'cik-prize-wheel') . '<input type="text" name="new_category[name]" /></label>';
+        echo '<label>' . esc_html__('Colour', 'cik-prize-wheel') . '<input type="color" name="new_category[color]" value="#006eb6" /></label>';
+        echo '<label>' . esc_html__('Weight', 'cik-prize-wheel') . '<input type="number" step="0.001" min="0" name="new_category[wheel_weight]" value="1.000" /></label>';
+        echo '<label class="cikw-grid-wide">' . esc_html__('Description', 'cik-prize-wheel') . '<textarea name="new_category[description]" rows="3"></textarea></label>';
+        echo '<label>' . esc_html__('Image', 'cik-prize-wheel') . $this->render_image_control('new_category[image_id]', 0) . '</label>';
+        echo '<label class="cikw-checkbox-label"><input type="checkbox" name="new_category[is_active]" value="1" checked /> ' . esc_html__('Active', 'cik-prize-wheel') . '</label>';
         echo '</div>';
 
-        submit_button(__('Αποθήκευση κατηγοριών', 'cik-prize-wheel'));
+        submit_button(__('Save categories', 'cik-prize-wheel'));
         echo '</form>';
         echo '</div>';
     }
@@ -140,11 +147,11 @@ final class CIKW_Admin_Data
         $prizes_by_category = $this->get_prizes_grouped_by_category();
 
         echo '<div class="wrap cikw-admin-page">';
-        echo '<h1>' . esc_html__('Δώρα', 'cik-prize-wheel') . '</h1>';
+        echo '<h1>' . esc_html__('Prizes', 'cik-prize-wheel') . '</h1>';
         $this->render_message_notice();
 
         if (empty($categories)) {
-            echo '<div class="notice notice-info"><p>' . esc_html__('Προσθέστε πρώτα κατηγορίες για να ορίσετε δώρα.', 'cik-prize-wheel') . '</p></div>';
+            echo '<div class="notice notice-info"><p>' . esc_html__('Add categories first, then define their prizes.', 'cik-prize-wheel') . '</p></div>';
             echo '</div>';
             return;
         }
@@ -162,23 +169,24 @@ final class CIKW_Admin_Data
             echo '<section class="cikw-category-prize-group">';
             echo '<h2>' . esc_html((string) $category['name']) . '</h2>';
             echo '<div class="' . esc_attr($summary_class) . '" data-cikw-summary="1">';
-            echo esc_html(sprintf(__('Σύνολο %.3g%% - Καμία νίκη %.3g%%', 'cik-prize-wheel'), $summary['sum'], $summary['no_win']));
+            /* translators: 1: sum of active prize probabilities, 2: remaining no-win share. */
+            echo esc_html(sprintf(__('Total %1$.3g%% - No win %2$.3g%%', 'cik-prize-wheel'), $summary['sum'], $summary['no_win']));
             if ($summary['sum'] > 100) {
-                echo ' <strong>' . esc_html__('Υπέρβαση ορίου', 'cik-prize-wheel') . '</strong>';
+                echo ' <strong>' . esc_html__('Over the limit', 'cik-prize-wheel') . '</strong>';
             }
             echo '</div>';
 
             echo '<table class="widefat fixed striped cikw-edit-table">';
             echo '<thead><tr>';
-            echo '<th>' . esc_html__('Τίτλος', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Περιγραφή', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Εικόνα', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Πιθανότητα %', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Σύνολο stock', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Υπόλοιπο', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Ημερήσιο όριο', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Ενεργό', 'cik-prize-wheel') . '</th>';
-            echo '<th>' . esc_html__('Ενέργειες', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Title', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Description', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Image', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Probability %', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Total stock', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Remaining', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Daily cap', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Active', 'cik-prize-wheel') . '</th>';
+            echo '<th>' . esc_html__('Actions', 'cik-prize-wheel') . '</th>';
             echo '</tr></thead><tbody>';
 
             foreach ($category_prizes as $prize) {
@@ -195,12 +203,12 @@ final class CIKW_Admin_Data
                 echo '<td><input type="number" min="0" name="prizes[' . esc_attr((string) $id) . '][stock_remaining]" value="' . esc_attr((string) $prize['stock_remaining']) . '" /></td>';
                 echo '<td><input type="number" min="0" name="prizes[' . esc_attr((string) $id) . '][daily_cap]" value="' . esc_attr(null === $prize['daily_cap'] ? '' : (string) $prize['daily_cap']) . '" /></td>';
                 echo '<td><input class="cikw-prize-active" type="checkbox" name="prizes[' . esc_attr((string) $id) . '][is_active]" value="1" ' . checked((int) $prize['is_active'], 1, false) . ' /></td>';
-                echo '<td><a href="' . esc_url($reset_url) . '">' . esc_html__('Reset stock', 'cik-prize-wheel') . '</a><br /><a class="button-link-delete" href="' . esc_url($delete_url) . '">' . esc_html__('Διαγραφή', 'cik-prize-wheel') . '</a></td>';
+                echo '<td><a href="' . esc_url($reset_url) . '">' . esc_html__('Reset stock', 'cik-prize-wheel') . '</a><br /><a class="button-link-delete" href="' . esc_url($delete_url) . '">' . esc_html__('Delete', 'cik-prize-wheel') . '</a></td>';
                 echo '</tr>';
             }
 
             echo '<tr class="cikw-new-row">';
-            echo '<td><input type="text" name="new_prizes[' . esc_attr((string) $category_id) . '][title]" placeholder="' . esc_attr__('Νέο δώρο', 'cik-prize-wheel') . '" /></td>';
+            echo '<td><input type="text" name="new_prizes[' . esc_attr((string) $category_id) . '][title]" placeholder="' . esc_attr__('New prize', 'cik-prize-wheel') . '" /></td>';
             echo '<td><textarea name="new_prizes[' . esc_attr((string) $category_id) . '][description]" rows="3"></textarea></td>';
             echo '<td>' . $this->render_image_control('new_prizes[' . $category_id . '][image_id]', 0) . '</td>';
             echo '<td><input class="cikw-prize-probability" type="number" step="0.001" min="0" max="100" name="new_prizes[' . esc_attr((string) $category_id) . '][probability]" value="0" /></td>';
@@ -208,13 +216,13 @@ final class CIKW_Admin_Data
             echo '<td><input type="number" min="0" name="new_prizes[' . esc_attr((string) $category_id) . '][stock_remaining]" value="0" /></td>';
             echo '<td><input type="number" min="0" name="new_prizes[' . esc_attr((string) $category_id) . '][daily_cap]" /></td>';
             echo '<td><input class="cikw-prize-active" type="checkbox" name="new_prizes[' . esc_attr((string) $category_id) . '][is_active]" value="1" checked /></td>';
-            echo '<td>' . esc_html__('Προσθήκη με αποθήκευση', 'cik-prize-wheel') . '</td>';
+            echo '<td>' . esc_html__('Added on save', 'cik-prize-wheel') . '</td>';
             echo '</tr>';
             echo '</tbody></table>';
             echo '</section>';
         }
 
-        submit_button(__('Αποθήκευση δώρων', 'cik-prize-wheel'));
+        submit_button(__('Save prizes', 'cik-prize-wheel'));
         echo '</form>';
         echo '</div>';
     }
@@ -483,7 +491,7 @@ final class CIKW_Admin_Data
             }
         }
 
-        return '<div class="cikw-image-control">' . $preview . '<input id="' . esc_attr($input_id) . '" type="number" min="0" name="' . esc_attr($name) . '" value="' . esc_attr((string) $image_id) . '" /> <button type="button" class="button cikw-media-select" data-target="' . esc_attr($input_id) . '">' . esc_html__('Επιλογή', 'cik-prize-wheel') . '</button></div>';
+        return '<div class="cikw-image-control">' . $preview . '<input id="' . esc_attr($input_id) . '" type="number" min="0" name="' . esc_attr($name) . '" value="' . esc_attr((string) $image_id) . '" /> <button type="button" class="button cikw-media-select" data-target="' . esc_attr($input_id) . '">' . esc_html__('Select', 'cik-prize-wheel') . '</button></div>';
     }
 
     private function render_message_notice(): void
@@ -495,12 +503,12 @@ final class CIKW_Admin_Data
         }
 
         $messages = [
-            'saved' => ['success', __('Οι αλλαγές αποθηκεύτηκαν.', 'cik-prize-wheel')],
-            'deleted' => ['success', __('Η εγγραφή διαγράφηκε.', 'cik-prize-wheel')],
-            'stock_reset' => ['success', __('Το υπόλοιπο stock επανήλθε στο συνολικό stock.', 'cik-prize-wheel')],
-            'probability_exceeded' => ['error', __('Το άθροισμα ενεργών πιθανοτήτων σε μία κατηγορία ξεπερνά το 100%. Δεν αποθηκεύτηκαν αλλαγές.', 'cik-prize-wheel')],
-            'category_has_prizes' => ['error', __('Η κατηγορία έχει δώρα. Διαγράψτε πρώτα τα δώρα της.', 'cik-prize-wheel')],
-            'invalid' => ['error', __('Μη έγκυρη ενέργεια.', 'cik-prize-wheel')],
+            'saved' => ['success', __('Changes saved.', 'cik-prize-wheel')],
+            'deleted' => ['success', __('The record was deleted.', 'cik-prize-wheel')],
+            'stock_reset' => ['success', __('Remaining stock was reset to total stock.', 'cik-prize-wheel')],
+            'probability_exceeded' => ['error', __('The active probabilities in a category add up to more than 100%. No changes were saved.', 'cik-prize-wheel')],
+            'category_has_prizes' => ['error', __('This category has prizes. Delete its prizes first.', 'cik-prize-wheel')],
+            'invalid' => ['error', __('Invalid action.', 'cik-prize-wheel')],
         ];
 
         if (!isset($messages[$message])) {
@@ -520,7 +528,7 @@ final class CIKW_Admin_Data
     private function require_manager(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
     }
 }

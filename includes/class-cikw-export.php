@@ -21,7 +21,7 @@ final class CIKW_Export
     public static function handle(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
 
         check_admin_referer('cikw_export_entries');
@@ -60,25 +60,25 @@ final class CIKW_Export
     private static function headings(): array
     {
         return [
-            __('Ημερομηνία συμμετοχής', 'cik-prize-wheel'),
-            __('Ονοματεπώνυμο', 'cik-prize-wheel'),
+            __('Entry date', 'cik-prize-wheel'),
+            __('Full name', 'cik-prize-wheel'),
             __('Email', 'cik-prize-wheel'),
-            __('Τηλέφωνο', 'cik-prize-wheel'),
-            __('Εταιρεία', 'cik-prize-wheel'),
-            __('Ιδιότητα', 'cik-prize-wheel'),
-            __('Δηλωμένη ανάγκη', 'cik-prize-wheel'),
-            __('Αρ. περιστροφής', 'cik-prize-wheel'),
-            __('Ώρα περιστροφής', 'cik-prize-wheel'),
-            __('Κατηγορία τροχού', 'cik-prize-wheel'),
-            __('Αποτέλεσμα', 'cik-prize-wheel'),
-            __('Δώρο', 'cik-prize-wheel'),
-            __('Κωδικός δώρου', 'cik-prize-wheel'),
-            __('Εξαργυρώθηκε', 'cik-prize-wheel'),
-            __('Από', 'cik-prize-wheel'),
-            __('Συγκατάθεση marketing', 'cik-prize-wheel'),
-            __('Έκδοση συγκατάθεσης', 'cik-prize-wheel'),
-            __('Συσκευή', 'cik-prize-wheel'),
-            __('Κατάσταση email', 'cik-prize-wheel'),
+            __('Phone', 'cik-prize-wheel'),
+            __('Company', 'cik-prize-wheel'),
+            __('Role', 'cik-prize-wheel'),
+            __('Stated interest', 'cik-prize-wheel'),
+            __('Spin no.', 'cik-prize-wheel'),
+            __('Spin time', 'cik-prize-wheel'),
+            __('Wheel category', 'cik-prize-wheel'),
+            __('Outcome', 'cik-prize-wheel'),
+            __('Prize', 'cik-prize-wheel'),
+            __('Voucher code', 'cik-prize-wheel'),
+            __('Redeemed', 'cik-prize-wheel'),
+            __('Redeemed by', 'cik-prize-wheel'),
+            __('Marketing consent', 'cik-prize-wheel'),
+            __('Consent version', 'cik-prize-wheel'),
+            __('Device', 'cik-prize-wheel'),
+            __('Email status', 'cik-prize-wheel'),
         ];
     }
 
@@ -91,16 +91,16 @@ final class CIKW_Export
         $outcome = (string) ($row['outcome'] ?? '');
 
         $outcome_label = match ($outcome) {
-            'win' => __('Κέρδισε', 'cik-prize-wheel'),
-            'lose' => __('Δεν κέρδισε', 'cik-prize-wheel'),
-            default => __('Δεν έπαιξε', 'cik-prize-wheel'),
+            'win' => __('Won', 'cik-prize-wheel'),
+            'lose' => __('Did not win', 'cik-prize-wheel'),
+            default => __('Did not play', 'cik-prize-wheel'),
         };
 
         $email_labels = [
-            'pending' => __('Σε αναμονή', 'cik-prize-wheel'),
-            'sent' => __('Στάλθηκε', 'cik-prize-wheel'),
-            'failed' => __('Απέτυχε', 'cik-prize-wheel'),
-            'skipped' => __('Παραλείφθηκε', 'cik-prize-wheel'),
+            'pending' => __('Pending', 'cik-prize-wheel'),
+            'sent' => __('Sent', 'cik-prize-wheel'),
+            'failed' => __('Failed', 'cik-prize-wheel'),
+            'skipped' => __('Skipped', 'cik-prize-wheel'),
         ];
 
         $values = [
@@ -119,7 +119,7 @@ final class CIKW_Export
             $row['voucher_code'] ?? '',
             self::date($row['redeemed_at'] ?? null),
             $row['redeemed_by'] ?? '',
-            !empty($row['consent_marketing']) ? __('Ναι', 'cik-prize-wheel') : __('Όχι', 'cik-prize-wheel'),
+            !empty($row['consent_marketing']) ? __('Yes', 'cik-prize-wheel') : __('No', 'cik-prize-wheel'),
             $row['consent_text_version'] ?? '',
             $row['device_id'] ?? '',
             $email_labels[(string) ($row['email_status'] ?? '')] ?? '',

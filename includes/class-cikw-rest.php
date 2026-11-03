@@ -87,7 +87,7 @@ final class CIKW_REST
 
         return new WP_Error(
             'cikw_invalid_kiosk_key',
-            __('Μη έγκυρο κλειδί kiosk.', 'cik-prize-wheel'),
+            __('Invalid kiosk key.', 'cik-prize-wheel'),
             ['status' => 401]
         );
     }
@@ -100,7 +100,7 @@ final class CIKW_REST
 
         return new WP_Error(
             'cikw_forbidden',
-            __('Απαιτούνται δικαιώματα προσωπικού.', 'cik-prize-wheel'),
+            __('Staff permissions are required.', 'cik-prize-wheel'),
             ['status' => 403]
         );
     }
@@ -211,7 +211,7 @@ final class CIKW_REST
         if (!empty($errors)) {
             return new WP_Error(
                 'cikw_validation_failed',
-                __('Ελέγξτε τα στοιχεία της φόρμας.', 'cik-prize-wheel'),
+                __('Please check the form fields.', 'cik-prize-wheel'),
                 ['status' => 400, 'fields' => $errors]
             );
         }
@@ -245,7 +245,7 @@ final class CIKW_REST
         if (false === $inserted) {
             return new WP_Error(
                 'cikw_register_failed',
-                __('Η εγγραφή δεν αποθηκεύτηκε. Δοκιμάστε ξανά.', 'cik-prize-wheel'),
+                __('The registration could not be saved. Please try again.', 'cik-prize-wheel'),
                 ['status' => 500]
             );
         }
@@ -393,7 +393,7 @@ final class CIKW_REST
         if (null === $entry) {
             return new WP_Error(
                 'cikw_entry_not_found',
-                __('Η συμμετοχή δεν βρέθηκε.', 'cik-prize-wheel'),
+                __('Entry not found.', 'cik-prize-wheel'),
                 ['status' => 404]
             );
         }
@@ -401,7 +401,7 @@ final class CIKW_REST
         if (!hash_equals((string) $entry['entry_token'], $token)) {
             return new WP_Error(
                 'cikw_token_mismatch',
-                __('Μη έγκυρο token συμμετοχής.', 'cik-prize-wheel'),
+                __('Invalid entry token.', 'cik-prize-wheel'),
                 ['status' => 403]
             );
         }

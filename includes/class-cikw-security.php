@@ -193,7 +193,7 @@ final class CIKW_Security
         if ($exceeded) {
             return new WP_Error(
                 'cikw_rate_limited',
-                __('Πολλές συμμετοχές σε σύντομο διάστημα. Δοκιμάστε ξανά σε λίγο.', 'cik-prize-wheel'),
+                __('Too many registrations in a short time. Please try again shortly.', 'cik-prize-wheel'),
                 ['status' => 429, 'retry_after' => HOUR_IN_SECONDS]
             );
         }

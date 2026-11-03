@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Έκθεση → Συμμετοχές: the list screen, the export button and the
+ * Prize Wheel > Entries: the list screen, the export button and the
  * per-row resend action.
  */
 final class CIKW_Admin_Entries
@@ -21,8 +21,8 @@ final class CIKW_Admin_Entries
     {
         add_submenu_page(
             'cikw-dashboard',
-            __('Συμμετοχές', 'cik-prize-wheel'),
-            __('Συμμετοχές', 'cik-prize-wheel'),
+            __('Entries', 'cik-prize-wheel'),
+            __('Entries', 'cik-prize-wheel'),
             'manage_options',
             'cikw-entries',
             [$this, 'render_page']
@@ -32,7 +32,7 @@ final class CIKW_Admin_Entries
     public function render_page(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
 
         $table = new CIKW_Entries_Table();
@@ -42,7 +42,7 @@ final class CIKW_Admin_Entries
         $active = CIKW_Entries_Query::active_filter_count($filters);
 
         echo '<div class="wrap cikw-admin-page">';
-        echo '<h1 class="wp-heading-inline">' . esc_html__('Συμμετοχές', 'cik-prize-wheel') . '</h1>';
+        echo '<h1 class="wp-heading-inline">' . esc_html__('Entries', 'cik-prize-wheel') . '</h1>';
         $this->render_notice();
 
         // The export carries the current filters through, so what you see is
@@ -67,19 +67,19 @@ final class CIKW_Admin_Entries
         );
 
         echo '<a href="' . esc_url($export_url) . '" class="page-title-action">'
-            . esc_html__('Εξαγωγή CSV', 'cik-prize-wheel') . '</a>';
+            . esc_html__('Export CSV', 'cik-prize-wheel') . '</a>';
 
         if ($active > 0) {
-            echo '<p class="description">' . esc_html__('Η εξαγωγή ακολουθεί τα ενεργά φίλτρα. Μία γραμμή ανά περιστροφή.', 'cik-prize-wheel') . '</p>';
+            echo '<p class="description">' . esc_html__('The export follows the active filters. One row per spin.', 'cik-prize-wheel') . '</p>';
         } else {
-            echo '<p class="description">' . esc_html__('Η εξαγωγή περιλαμβάνει όλες τις συμμετοχές. Μία γραμμή ανά περιστροφή.', 'cik-prize-wheel') . '</p>';
+            echo '<p class="description">' . esc_html__('The export includes all entries. One row per spin.', 'cik-prize-wheel') . '</p>';
         }
 
         echo '<hr class="wp-header-end" />';
 
         echo '<form method="get">';
         echo '<input type="hidden" name="page" value="cikw-entries" />';
-        $table->search_box(__('Αναζήτηση', 'cik-prize-wheel'), 'cikw-entry-search');
+        $table->search_box(__('Search', 'cik-prize-wheel'), 'cikw-entry-search');
         $table->display();
         echo '</form>';
 
@@ -89,7 +89,7 @@ final class CIKW_Admin_Entries
     public function handle_resend(): void
     {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης.', 'cik-prize-wheel'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'cik-prize-wheel'));
         }
 
         $entry_id = isset($_GET['entry_id']) ? absint($_GET['entry_id']) : 0;
@@ -120,7 +120,7 @@ final class CIKW_Admin_Entries
 
         if ('resent' === $message) {
             echo '<div class="notice notice-success is-dismissible"><p>'
-                . esc_html__('Το email στάλθηκε.', 'cik-prize-wheel') . '</p></div>';
+                . esc_html__('The email was sent.', 'cik-prize-wheel') . '</p></div>';
 
             return;
         }
@@ -130,7 +130,7 @@ final class CIKW_Admin_Entries
             delete_transient(self::error_transient_key());
 
             echo '<div class="notice notice-error is-dismissible"><p>'
-                . esc_html__('Η αποστολή απέτυχε.', 'cik-prize-wheel')
+                . esc_html__('Sending failed.', 'cik-prize-wheel')
                 . ('' !== $error ? ' ' . esc_html($error) : '')
                 . '</p></div>';
         }

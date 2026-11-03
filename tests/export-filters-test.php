@@ -70,7 +70,7 @@ echo "\n1. CSV formula injection is neutralised\n";
         check('leading ' . json_encode($lead) . ' is quoted', $result, "'" . $payload);
     }
 
-    check('ordinary Greek text is untouched',
+    check('ordinary non-Latin (Greek) text is untouched',
         call_private('CIKW_Export', 'harden', ['Γιώργος Παπαδόπουλος']), 'Γιώργος Παπαδόπουλος');
     check('formula after leading spaces is quoted',
         call_private('CIKW_Export', 'harden', ['  =1+1']), "'  =1+1");
@@ -90,14 +90,14 @@ echo "\n2. every export column has a heading\n";
         'full_name' => 'Μαρία Οικονόμου',
         'email' => 'demo@example.test',
         'phone' => '6900000000',
-        'company' => 'Δομική ΑΕ',
-        'role' => 'Αρχιτέκτονας',
-        'need_category_name' => 'Στεγανωτικά Ταρατσών',
+        'company' => 'Acme Retail Ltd',
+        'role' => 'Architect',
+        'need_category_name' => 'Smart Home',
         'spin_number' => 1,
         'spin_created_at' => '2026-10-23 11:31:00',
-        'category_name' => 'Βιομηχανικά Δάπεδα',
+        'category_name' => 'Networking',
         'outcome' => 'win',
-        'prize_title' => 'Σετ εργαλείων',
+        'prize_title' => 'Mesh Wi-Fi system',
         'voucher_code' => 'K7M4QP',
         'redeemed_at' => null,
         'redeemed_by' => '',
@@ -109,8 +109,8 @@ echo "\n2. every export column has a heading\n";
 
     check('heading count matches row width', count($row), count($headings));
     check('voucher survives', $row[12], 'K7M4QP');
-    check('win is translated', $row[10], 'Κέρδισε');
-    check('consent renders as Ναι', $row[15], 'Ναι');
+    check('win is labelled', $row[10], 'Won');
+    check('consent renders as Yes', $row[15], 'Yes');
     check('empty redeemed date is blank', $row[13], '');
 }
 

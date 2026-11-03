@@ -50,7 +50,7 @@ final class CIKW_Spin_Engine
         if (null === $entry) {
             return new WP_Error(
                 'cikw_entry_not_found',
-                __('Η συμμετοχή δεν βρέθηκε.', 'cik-prize-wheel'),
+                __('Entry not found.', 'cik-prize-wheel'),
                 ['status' => 404]
             );
         }
@@ -58,7 +58,7 @@ final class CIKW_Spin_Engine
         if (!hash_equals((string) $entry['entry_token'], $entry_token)) {
             return new WP_Error(
                 'cikw_token_mismatch',
-                __('Μη έγκυρο token συμμετοχής.', 'cik-prize-wheel'),
+                __('Invalid entry token.', 'cik-prize-wheel'),
                 ['status' => 403]
             );
         }
@@ -76,7 +76,7 @@ final class CIKW_Spin_Engine
         if ($spins_used >= $max_spins) {
             return new WP_Error(
                 'cikw_no_spins_left',
-                __('Δεν έχεις άλλες προσπάθειες.', 'cik-prize-wheel'),
+                __('You have no spins left.', 'cik-prize-wheel'),
                 ['status' => 409]
             );
         }
@@ -87,7 +87,7 @@ final class CIKW_Spin_Engine
         if (empty($categories)) {
             return new WP_Error(
                 'cikw_no_categories',
-                __('Δεν υπάρχουν ενεργές κατηγορίες.', 'cik-prize-wheel'),
+                __('There are no active categories.', 'cik-prize-wheel'),
                 ['status' => 500]
             );
         }
@@ -495,7 +495,7 @@ final class CIKW_Spin_Engine
                 if (str_contains((string) $wpdb->last_error, 'entry_spin')) {
                     return new WP_Error(
                         'cikw_no_spins_left',
-                        __('Δεν έχεις άλλες προσπάθειες.', 'cik-prize-wheel'),
+                        __('You have no spins left.', 'cik-prize-wheel'),
                         ['status' => 409]
                     );
                 }
@@ -506,7 +506,7 @@ final class CIKW_Spin_Engine
 
         return new WP_Error(
             'cikw_spin_write_failed',
-            __('Η περιστροφή δεν καταγράφηκε. Δοκίμασε ξανά.', 'cik-prize-wheel'),
+            __('The spin could not be recorded. Please try again.', 'cik-prize-wheel'),
             ['status' => 500]
         );
     }

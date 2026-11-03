@@ -76,7 +76,7 @@ final class CIKW_Vouchers
         if (null === $voucher) {
             return new WP_Error(
                 'cikw_voucher_not_found',
-                __('Ο κωδικός δεν βρέθηκε.', 'cik-prize-wheel'),
+                __('Code not found.', 'cik-prize-wheel'),
                 ['status' => 404]
             );
         }
@@ -84,7 +84,7 @@ final class CIKW_Vouchers
         if (null !== $voucher['redeemed_at']) {
             return new WP_Error(
                 'cikw_voucher_already_redeemed',
-                __('Ο κωδικός έχει ήδη εξαργυρωθεί.', 'cik-prize-wheel'),
+                __('This code has already been redeemed.', 'cik-prize-wheel'),
                 [
                     'status' => 409,
                     'redeemed_at' => $voucher['redeemed_at'],
@@ -106,7 +106,7 @@ final class CIKW_Vouchers
         if (1 !== (int) $updated) {
             return new WP_Error(
                 'cikw_voucher_already_redeemed',
-                __('Ο κωδικός έχει ήδη εξαργυρωθεί.', 'cik-prize-wheel'),
+                __('This code has already been redeemed.', 'cik-prize-wheel'),
                 ['status' => 409]
             );
         }
@@ -128,7 +128,7 @@ final class CIKW_Vouchers
         $voucher = self::find(self::normalise($code));
 
         if (null === $voucher) {
-            return new WP_Error('cikw_voucher_not_found', __('Ο κωδικός δεν βρέθηκε.', 'cik-prize-wheel'));
+            return new WP_Error('cikw_voucher_not_found', __('Code not found.', 'cik-prize-wheel'));
         }
 
         $wpdb->query($wpdb->prepare(
