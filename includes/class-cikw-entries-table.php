@@ -207,7 +207,7 @@ final class CIKW_Entries_Table extends WP_List_Table
     /** @param array<string, mixed> $item */
     public function column_email($item): string
     {
-        return '<a href="mailto:' . esc_attr((string) $item['email']) . '">' . esc_html((string) $item['email']) . '</a>';
+        return '<a href="' . esc_url('mailto:' . (string) $item['email']) . '">' . esc_html((string) $item['email']) . '</a>';
     }
 
     /** @param array<string, mixed> $item */
