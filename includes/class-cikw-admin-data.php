@@ -40,7 +40,7 @@ final class CIKW_Admin_Data
 
     public function enqueue_assets(string $hook): void
     {
-        $page = isset($_GET['page']) ? sanitize_key((string) $_GET['page']) : '';
+        $page = isset($_GET['page']) ? sanitize_key(wp_unslash((string) $_GET['page'])) : '';
 
         if (!in_array($page, ['cikw-categories', 'cikw-prizes'], true)) {
             return;
@@ -488,7 +488,7 @@ final class CIKW_Admin_Data
 
     private function render_message_notice(): void
     {
-        $message = isset($_GET['cikw_message']) ? sanitize_key((string) $_GET['cikw_message']) : '';
+        $message = isset($_GET['cikw_message']) ? sanitize_key(wp_unslash((string) $_GET['cikw_message'])) : '';
 
         if ('' === $message) {
             return;

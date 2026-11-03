@@ -180,6 +180,9 @@ final class CIKW_Admin_Redeem
         echo '</form>';
     }
 
+    /**
+     * @param string $value Already-escaped HTML; every caller escapes it.
+     */
     private function row(string $label, string $value): void
     {
         echo '<tr><td style="width:150px;color:#646970;">' . esc_html($label) . '</td><td><strong>' . $value . '</strong></td></tr>';
@@ -307,14 +310,14 @@ final class CIKW_Admin_Redeem
 
         if ($pages > 1) {
             echo '<div class="tablenav"><div class="tablenav-pages">';
-            echo paginate_links([
+            echo wp_kses_post((string) paginate_links([
                 'base' => add_query_arg('paged', '%#%'),
                 'format' => '',
                 'current' => $page,
                 'total' => $pages,
                 'prev_text' => '&laquo;',
                 'next_text' => '&raquo;',
-            ]);
+            ]));
             echo '</div></div>';
         }
     }
@@ -328,7 +331,7 @@ final class CIKW_Admin_Redeem
         $this->require_manager();
         check_admin_referer('cikw_redeem_voucher');
 
-        $code = CIKW_Vouchers::normalise((string) ($_POST['voucher_code'] ?? ''));
+        $code = CIKW_Vouchers::normalise(wp_unslash((string) ($_POST['voucher_code'] ?? '')));
         $staff = sanitize_text_field(wp_unslash((string) ($_POST['staff'] ?? '')));
 
         $result = CIKW_Vouchers::redeem($code, $staff);
@@ -345,7 +348,7 @@ final class CIKW_Admin_Redeem
         $this->require_manager();
         check_admin_referer('cikw_unredeem_voucher');
 
-        $code = CIKW_Vouchers::normalise((string) ($_POST['voucher_code'] ?? ''));
+        $code = CIKW_Vouchers::normalise(wp_unslash((string) ($_POST['voucher_code'] ?? '')));
         CIKW_Vouchers::unredeem($code);
 
         $this->redirect(['cikw_code' => $code, 'cikw_message' => 'unredeemed']);

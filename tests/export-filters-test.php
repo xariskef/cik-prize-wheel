@@ -72,6 +72,10 @@ echo "\n1. CSV formula injection is neutralised\n";
 
     check('ordinary Greek text is untouched',
         call_private('CIKW_Export', 'harden', ['Γιώργος Παπαδόπουλος']), 'Γιώργος Παπαδόπουλος');
+    check('formula after leading spaces is quoted',
+        call_private('CIKW_Export', 'harden', ['  =1+1']), "'  =1+1");
+    check('only spaces stays as is',
+        call_private('CIKW_Export', 'harden', ['   ']), '   ');
     check('an equals sign mid-string is fine',
         call_private('CIKW_Export', 'harden', ['a=b']), 'a=b');
     check('empty stays empty', call_private('CIKW_Export', 'harden', ['']), '');

@@ -104,7 +104,11 @@ final class CIKW_Admin_Entries
         $result = CIKW_Mailer::send_for_entry($entry_id, true);
 
         if (is_wp_error($result)) {
-            $this->redirect(['cikw_message' => 'resend_failed', 'cikw_error' => rawurlencode($result->get_error_message())]);
+            // The error text goes through a short-lived per-user transient
+            // rather than the URL, so a crafted link cannot put arbitrary
+            // text into an admin notice.
+            set_transient(self::error_transient_key(), $result->get_error_message(), MINUTE_IN_SECONDS);
+            $this->redirect(['cikw_message' => 'resend_failed']);
         }
 
         $this->redirect(['cikw_message' => 'resent']);
@@ -122,13 +126,19 @@ final class CIKW_Admin_Entries
         }
 
         if ('resend_failed' === $message) {
-            $error = isset($_GET['cikw_error']) ? sanitize_text_field(rawurldecode(wp_unslash((string) $_GET['cikw_error']))) : '';
+            $error = (string) get_transient(self::error_transient_key());
+            delete_transient(self::error_transient_key());
 
             echo '<div class="notice notice-error is-dismissible"><p>'
                 . esc_html__('Η αποστολή απέτυχε.', 'cik-prize-wheel')
                 . ('' !== $error ? ' ' . esc_html($error) : '')
                 . '</p></div>';
         }
+    }
+
+    private static function error_transient_key(): string
+    {
+        return 'cikw_resend_error_' . get_current_user_id();
     }
 
     /** @param array<string, string> $args */

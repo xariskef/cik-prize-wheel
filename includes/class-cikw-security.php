@@ -24,16 +24,26 @@ final class CIKW_Security
 
     /**
      * Best-effort client IP. Only ever used to build a hash - the raw value
-     * is never stored (spec section 3).
+     * is never stored.
+     *
+     * Only REMOTE_ADDR is trusted by default. Forwarding headers such as
+     * X-Forwarded-For are set by the client unless a proxy overwrites them,
+     * so trusting them blindly would let anyone pick a fresh "IP" per request
+     * and walk straight past the rate limit. Sites behind a known reverse
+     * proxy or CDN opt in through the filter, e.g.:
+     *
+     *   add_filter('cikw_trusted_ip_headers', fn () => ['HTTP_CF_CONNECTING_IP']);
      */
     public static function client_ip(): string
     {
-        $candidates = [
-            'HTTP_CF_CONNECTING_IP',
-            'HTTP_X_REAL_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'REMOTE_ADDR',
-        ];
+        /**
+         * Filter the $_SERVER keys trusted to carry the real client IP,
+         * checked in order before REMOTE_ADDR.
+         *
+         * @param string[] $headers Default empty: trust REMOTE_ADDR only.
+         */
+        $trusted = (array) apply_filters('cikw_trusted_ip_headers', []);
+        $candidates = array_merge(array_map('strval', $trusted), ['REMOTE_ADDR']);
 
         foreach ($candidates as $key) {
             if (empty($_SERVER[$key])) {
@@ -134,15 +144,53 @@ final class CIKW_Security
     }
 
     /**
+     * Registrations from one hashed IP within the last hour, across every
+     * device_id. device_id is supplied by the client, so on its own it cannot
+     * be what the limit hangs on.
+     */
+    public static function registrations_from_ip_in_last_hour(string $ip_hash): int
+    {
+        global $wpdb;
+
+        $threshold = gmdate('Y-m-d H:i:s', (int) current_time('timestamp') - HOUR_IN_SECONDS);
+
+        return (int) $wpdb->get_var($wpdb->prepare(
+            'SELECT COUNT(*) FROM %i WHERE ip_hash = %s AND created_at >= %s',
+            CIKW_Activator::table_name('entries'),
+            $ip_hash,
+            $threshold
+        ));
+    }
+
+    /**
+     * Two limits, both per rolling hour:
+     *
+     *  - per (device_id, IP): the configured "registrations per hour" setting;
+     *  - per IP across all devices: a ceiling for several kiosks sharing one
+     *    network, which also stops a script from rotating device_id to reset
+     *    its own counter. Defaults to five kiosks' worth; filterable.
+     *
      * @return true|WP_Error True when under the limit, WP_Error 429 otherwise.
      */
     public static function check_rate_limit(string $device_id, ?string $ip_hash): bool|WP_Error
     {
         $options = CIKW_Settings::get_options();
         $limit = max(1, (int) ($options['rate_limit_per_hour'] ?? 40));
-        $used = self::registrations_in_last_hour($device_id, $ip_hash);
+        $exceeded = self::registrations_in_last_hour($device_id, $ip_hash) >= $limit;
 
-        if ($used >= $limit) {
+        if (!$exceeded && null !== $ip_hash) {
+            /**
+             * Filter the hourly registration ceiling for one IP address
+             * across all kiosk devices.
+             *
+             * @param int $ip_limit Default: five times the per-device limit.
+             * @param int $limit    The per-device limit from the settings.
+             */
+            $ip_limit = max($limit, (int) apply_filters('cikw_rate_limit_per_ip', $limit * 5, $limit));
+            $exceeded = self::registrations_from_ip_in_last_hour($ip_hash) >= $ip_limit;
+        }
+
+        if ($exceeded) {
             return new WP_Error(
                 'cikw_rate_limited',
                 __('Πολλές συμμετοχές σε σύντομο διάστημα. Δοκιμάστε ξανά σε λίγο.', 'cik-prize-wheel'),

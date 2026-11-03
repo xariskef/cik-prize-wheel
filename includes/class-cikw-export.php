@@ -151,7 +151,12 @@ final class CIKW_Export
             return '';
         }
 
-        if (in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+        // Leading spaces are skipped too: some spreadsheet apps trim them
+        // before deciding whether a cell is a formula.
+        $first = ltrim($value, ' ')[0] ?? '';
+
+        if (in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)
+            || in_array($first, ['=', '+', '-', '@'], true)) {
             return "'" . $value;
         }
 

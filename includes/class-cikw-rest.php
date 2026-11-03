@@ -161,9 +161,11 @@ final class CIKW_REST
         }
 
         // Validated server-side regardless of what the client already checked.
+        // Lengths are capped to the column sizes so strict-mode MySQL cannot
+        // reject the insert.
         $errors = [];
 
-        $full_name = sanitize_text_field((string) ($request->get_param('full_name') ?? ''));
+        $full_name = mb_substr(sanitize_text_field((string) ($request->get_param('full_name') ?? '')), 0, 190);
         if ('' === $full_name && in_array('name', $required, true)) {
             $errors['full_name'] = 'required';
         }
@@ -173,7 +175,7 @@ final class CIKW_REST
             if (in_array('email', $required, true)) {
                 $errors['email'] = 'required';
             }
-        } elseif (!is_email($email)) {
+        } elseif (!is_email($email) || strlen($email) > 190) {
             $errors['email'] = 'invalid';
         }
 
@@ -196,12 +198,12 @@ final class CIKW_REST
             $errors['need_category_id'] = 'required';
         }
 
-        $company = sanitize_text_field((string) ($request->get_param('company') ?? ''));
+        $company = mb_substr(sanitize_text_field((string) ($request->get_param('company') ?? '')), 0, 190);
         if ('' === $company && in_array('company', $required, true)) {
             $errors['company'] = 'required';
         }
 
-        $role = sanitize_text_field((string) ($request->get_param('role') ?? ''));
+        $role = mb_substr(sanitize_text_field((string) ($request->get_param('role') ?? '')), 0, 120);
         if ('' === $role && in_array('role', $required, true)) {
             $errors['role'] = 'required';
         }

@@ -118,7 +118,8 @@ final class CIKW_Activator
             KEY email_status (email_status),
             KEY device_created (device_id, created_at),
             KEY finished_at (finished_at),
-            KEY email_queue (email_status, email_next_attempt_at)
+            KEY email_queue (email_status, email_next_attempt_at),
+            KEY ip_created (ip_hash, created_at)
         ) {$collation};";
 
         $sql[] = "CREATE TABLE {$spins} (
