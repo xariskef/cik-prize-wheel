@@ -63,7 +63,8 @@ final class CIKW_Spin_Engine
             );
         }
 
-        // --- Step 2: spin budget.
+        // --- Step 2: spin budget. A quick read to fail fast; the UNIQUE
+        // (entry_id, spin_number) index enforces it under concurrency.
         $options = CIKW_Settings::get_options();
         $max_spins = max(1, (int) $options['max_spins_per_registration']);
         $spins_used = (int) $wpdb->get_var($wpdb->prepare(
@@ -484,6 +485,19 @@ final class CIKW_Spin_Engine
                         'spin_id' => (int) $wpdb->insert_id,
                         'voucher_code' => $voucher,
                     ];
+                }
+
+                // Two requests for the same entry raced past the spin-budget
+                // check and both tried to write this spin_number. The UNIQUE
+                // (entry_id, spin_number) index let exactly one through; this
+                // one is out of spins, and retrying with a new voucher would
+                // not help.
+                if (str_contains((string) $wpdb->last_error, 'entry_spin')) {
+                    return new WP_Error(
+                        'cikw_no_spins_left',
+                        __('Δεν έχεις άλλες προσπάθειες.', 'cik-prize-wheel'),
+                        ['status' => 409]
+                    );
                 }
             }
         } finally {

@@ -46,6 +46,7 @@ class FakeWpdb
     public array $spins = [];
     public array $entries = [];
     public int $claim_attempts = 0;
+    public string $last_error = '';
 
     public function prepare($query, ...$args)
     {
@@ -142,8 +143,14 @@ class FakeWpdb
     public function insert($table, $data, $formats = null)
     {
         if (str_contains($table, 'cikw_spins')) {
+            $this->last_error = '';
             foreach ($this->spins as $spin) {
+                if ((int) $spin['entry_id'] === (int) $data['entry_id'] && (int) $spin['spin_number'] === (int) $data['spin_number']) {
+                    $this->last_error = "Duplicate entry for key 'entry_spin'";
+                    return false; // UNIQUE (entry_id, spin_number) collision
+                }
                 if (null !== $spin['voucher_code'] && $spin['voucher_code'] === $data['voucher_code']) {
+                    $this->last_error = "Duplicate entry for key 'voucher_code'";
                     return false; // UNIQUE collision
                 }
             }
@@ -513,6 +520,15 @@ foreach ($wpdb->prizes as $prize) {
 }
 check('nothing oversold', count($oversold), 0);
 if ($oversold) { echo '       oversold: ' . implode(', ', $oversold) . "\n"; }
+
+echo "\nDuplicate spin number (two requests racing for the same entry)\n";
+$first = call_private('insert_spin', [999001, 1, 1, null, 'lose', []]);
+$second = call_private('insert_spin', [999001, 1, 1, null, 'lose', []]);
+check('first write succeeds', is_array($first), true);
+check('second write is refused as no spins left',
+    $second instanceof WP_Error ? $second->code : null, 'cikw_no_spins_left');
+check('refusal carries HTTP 409',
+    $second instanceof WP_Error ? ($second->data['status'] ?? null) : null, 409);
 
 echo "\n" . str_repeat('=', 68) . "\n";
 if (0 === $failures) {

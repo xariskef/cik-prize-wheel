@@ -51,7 +51,8 @@ final class CIKW_Activator
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        $collation = 'DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB';
+        // InnoDB is required: the stock claim relies on its row-level locking.
+        $collation = $wpdb->get_charset_collate() . ' ENGINE=InnoDB';
 
         $categories = self::table_name('categories');
         $prizes = self::table_name('prizes');
@@ -139,7 +140,8 @@ final class CIKW_Activator
             KEY created_at (created_at),
             KEY prize_id (prize_id),
             KEY category_id (category_id),
-            UNIQUE KEY voucher_code (voucher_code)
+            UNIQUE KEY voucher_code (voucher_code),
+            UNIQUE KEY entry_spin (entry_id, spin_number)
         ) {$collation};";
 
         foreach ($sql as $statement) {

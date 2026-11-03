@@ -20,7 +20,7 @@ define('CIKW_PLUGIN_FILE', __FILE__);
 define('CIKW_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('CIKW_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CIKW_VERSION', '1.0.0');
-define('CIKW_SCHEMA_VERSION', '1.3.0');
+define('CIKW_SCHEMA_VERSION', '1.4.0');
 
 require_once CIKW_PLUGIN_DIR . 'includes/class-cikw-settings.php';
 require_once CIKW_PLUGIN_DIR . 'includes/class-cikw-admin-data.php';
