@@ -521,7 +521,7 @@ foreach ($wpdb->prizes as $prize) {
 check('nothing oversold', count($oversold), 0);
 if ($oversold) { echo '       oversold: ' . implode(', ', $oversold) . "\n"; }
 
-echo "\nDuplicate spin number (two requests racing for the same entry)\n";
+echo "\n17. duplicate spin number - two requests racing for the same entry\n";
 $first = call_private('insert_spin', [999001, 1, 1, null, 'lose', []]);
 $second = call_private('insert_spin', [999001, 1, 1, null, 'lose', []]);
 check('first write succeeds', is_array($first), true);
