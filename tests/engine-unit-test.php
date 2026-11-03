@@ -228,7 +228,7 @@ $wpdb->prizes = [
 $d = call_private('build_distribution', [7, 'to_lose']);
 check('prize A units', $d['eligible_units'][1], 10000);
 check('prize B units', $d['eligible_units'][2], 20000);
-check('no-win units (spec example: 70%)', $d['no_win_units'], 70000);
+check('no-win units (example: 70%)', $d['no_win_units'], 70000);
 
 echo "\n2. build_distribution - out of stock, to_lose\n";
 $wpdb->prizes[1]['stock_remaining'] = 0;

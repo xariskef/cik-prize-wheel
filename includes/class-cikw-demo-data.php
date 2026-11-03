@@ -245,7 +245,7 @@ final class CIKW_Demo_Data
                     'image_id' => null,
                     'color' => $category['color'],
                     // Equal weights: the segments are equal in size, so equal
-                    // odds are the only honest configuration (spec section 3).
+                    // odds are the only honest configuration.
                     'wheel_weight' => 1.000,
                     'segment_order' => $index + 1,
                     'is_active' => $category['is_active'] ?? 1,
@@ -351,7 +351,7 @@ final class CIKW_Demo_Data
         for ($i = 0; $i < $count; $i++) {
             $token = CIKW_Security::generate_entry_token();
 
-            // Spread entries across the three show days so the Phase 5 date
+            // Spread entries across the three show days so the date
             // filters and CSV export have something realistic to work with.
             $created = gmdate('Y-m-d H:i:s', $now - random_int(0, 3 * DAY_IN_SECONDS));
 
@@ -371,7 +371,7 @@ final class CIKW_Demo_Data
                     'entry_token' => $token,
                     'device_id' => self::DEMO_DEVICE_ID,
                     'ip_hash' => null,
-                    // 'skipped' so the Phase 5 cron worker can never email
+                    // 'skipped' so the cron worker can never email
                     // these fabricated addresses.
                     'email_status' => 'skipped',
                     'email_attempts' => 0,

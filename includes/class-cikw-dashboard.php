@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * The dashboard widget the booth staff watch during the show (spec 6.6).
+ * The dashboard widget the booth staff watch during the show.
  *
  * Deliberately read-only and cheap: participations today and in total,
  * prizes awarded against what is left, pending emails, and when something

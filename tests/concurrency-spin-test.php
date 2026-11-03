@@ -1,6 +1,6 @@
 <?php
 /**
- * The single most important test in the project (spec section 11.3):
+ * The single most important test in the project:
  * fire 50 parallel spins at a prize with stock_total = 3 and assert that
  * exactly 3 prizes are awarded. No overselling, no under-awarding.
  *

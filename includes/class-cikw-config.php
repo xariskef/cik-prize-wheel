@@ -8,8 +8,9 @@ if (!defined('ABSPATH')) {
  * Everything the frontend needs before a visitor exists: wheel segments,
  * the "interest" dropdown, timings, consent, and all kiosk UI copy.
  *
- * Shared by GET /config and by the companion theme, which inlines the same
- * payload into data-props so the first screen paints without a round trip.
+ * Served by GET /config. A kiosk front end rendered by WordPress can also
+ * inline the same payload into the page, so the first screen paints without
+ * a round trip.
  */
 final class CIKW_Config
 {

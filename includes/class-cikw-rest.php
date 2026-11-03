@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * The cikw/v1 REST surface (spec section 4).
+ * The cikw/v1 REST surface.
  *
  * GET  /config   public, cacheable
  * POST /register kiosk key
@@ -122,7 +122,7 @@ final class CIKW_REST
      * ----------------------------------------------------------------- */
 
     /**
-     * Live counters for the kiosk's own hidden status panel (spec section 6).
+     * Live counters for the kiosk's own hidden status panel.
      *
      * Gated by the kiosk key rather than the staff key: the panel is opened
      * by a hidden gesture on the machine standing at the booth, and the staff
@@ -286,7 +286,7 @@ final class CIKW_REST
      * Marks the participation complete and queues the email. Idempotent:
      * calling it twice returns the same state and never re-queues.
      *
-     * The email itself is sent by the Phase 5 cron worker, never inside this
+     * The email itself is sent by the cron worker, never inside this
      * request - the trade-show network is slow and the UI must not block.
      */
     public function handle_finish(WP_REST_Request $request): WP_REST_Response|WP_Error

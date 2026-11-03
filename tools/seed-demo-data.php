@@ -19,7 +19,7 @@
  *       Delete everything and stop.
  *
  * Simulated visitors are written with device_id = 'demo-seed' and
- * email_status = 'skipped', so the Phase 5 cron worker can never email them
+ * email_status = 'skipped', so the cron worker can never email them
  * and --reset can find them again. Their addresses are all @example.test,
  * which is a reserved TLD that cannot receive mail.
  */

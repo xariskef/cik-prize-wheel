@@ -6,7 +6,7 @@
  *
  * Runs with nothing but a PHP binary. These are the places where a bug is
  * silent rather than loud: a filter value that reaches SQL unchecked, or a
- * participant name that turns into a formula when the client opens the CSV
+ * participant name that turns into a formula when the organiser opens the CSV
  * in Excel. Neither would ever show up in manual testing.
  */
 
@@ -159,7 +159,7 @@ echo "\n6. email retry backoff\n";
     $backoff = private_const('CIKW_Mailer', 'BACKOFF_MINUTES');
     $max = CIKW_Mailer::MAX_ATTEMPTS;
 
-    check('cap is 5 attempts (spec section 8)', $max, 5);
+    check('cap is 5 attempts', $max, 5);
     check('first send is immediate', $backoff[0], 0);
     check('one entry per attempt', count($backoff), $max);
 

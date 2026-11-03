@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * The confirmation email (spec section 8).
+ * The confirmation email.
  *
  * Responsive HTML with a plain-text alternative: thank you for
  * visiting the stand, a recap of the category or categories the wheel landed
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
  */
 final class CIKW_Mailer
 {
-    /** Give up after this many tries (spec section 8). */
+    /** Give up after this many tries. */
     public const MAX_ATTEMPTS = 5;
 
     /**

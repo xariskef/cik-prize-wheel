@@ -33,7 +33,7 @@ function pad(string $text, int $width): string
 
 echo "Categories: " . count($categories) . "\n";
 if (count($categories) < 10 || count($categories) > 12) {
-    bad('category count outside the 10-12 legible range (spec 12)');
+    bad('category count outside the 10-12 legible range');
 }
 
 $slugs = [];

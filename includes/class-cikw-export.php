@@ -5,10 +5,10 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * CSV export (spec section 6.4).
+ * CSV export.
  *
  * One row per spin joined to the participant, honouring whatever filters are
- * active on the entries screen. This is the client's number one deliverable,
+ * active on the entries screen. This file is what the organiser takes away from the event,
  * so two details matter more than anything else here:
  *
  *  - The file starts with a UTF-8 BOM. Without it Excel on Windows reads the

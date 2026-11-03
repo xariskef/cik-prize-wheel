@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * The spin engine, implementing spec section 5 step for step.
+ * The spin engine.
  *
  * Two independent rolls: one picks the category the wheel lands on, one
  * decides whether a prize is won inside that category. Landing on a category
@@ -23,7 +23,7 @@ final class CIKW_Spin_Engine
     private const UNIT_SCALE = 1000;
     private const TOTAL_UNITS = 100000;
 
-    /** No 0/O/1/I/L - they are misread off a screen (spec section 5 step 7). */
+    /** No 0/O/1/I/L - they are misread off a screen. */
     private const VOUCHER_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     private const VOUCHER_LENGTH = 6;
     private const VOUCHER_MAX_ATTEMPTS = 5;

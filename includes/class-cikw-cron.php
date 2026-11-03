@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * The email queue worker (spec section 8).
+ * The email queue worker.
  *
  * Sends pending confirmations in small batches on WP-Cron, with exponential
  * backoff, so a slow or flapping trade-show network never blocks the kiosk

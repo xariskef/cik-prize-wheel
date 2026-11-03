@@ -7,13 +7,13 @@ if (!defined('ABSPATH')) {
 /**
  * Filtering and reading of participations.
  *
- * The list table and the CSV export share this class deliberately: the spec
- * requires the export to honour the active filters, and the only way to
- * guarantee that is for both to build their WHERE clause from the same code.
+ * The list table and the CSV export share this class deliberately: the
+ * export must honour the active filters, and the only way to guarantee that
+ * is for both to build their WHERE clause from the same code.
  *
  * The list table shows one row per ENTRY (with the spins aggregated); the
- * export produces one row per SPIN joined to the participant (spec section
- * 6.4). Both accept the same filter array.
+ * export produces one row per SPIN joined to the participant. Both accept
+ * the same filter array.
  */
 final class CIKW_Entries_Query
 {

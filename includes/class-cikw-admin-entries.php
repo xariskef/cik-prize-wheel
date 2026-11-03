@@ -46,7 +46,7 @@ final class CIKW_Admin_Entries
         $this->render_notice();
 
         // The export carries the current filters through, so what you see is
-        // what you get (spec section 6.4).
+        // what you get.
         $export_url = wp_nonce_url(
             add_query_arg(
                 array_merge(

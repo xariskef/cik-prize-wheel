@@ -71,7 +71,7 @@ final class CIKW_Settings
      * The shared key every kiosk write endpoint requires.
      *
      * Public by nature - it ships inside the kiosk page, which is a public
-     * URL. It is a gate against random traffic, not a secret (spec section 4).
+     * URL. It is a gate against random traffic, not a secret.
      */
     public static function kiosk_key(): string
     {
