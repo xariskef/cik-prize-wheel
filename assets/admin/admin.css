@@ -1,0 +1,98 @@
+.cikw-admin-page .cikw-edit-table {
+    margin-top: 12px;
+}
+
+.cikw-admin-page .cikw-edit-table input[type="text"],
+.cikw-admin-page .cikw-edit-table input[type="number"],
+.cikw-admin-page .cikw-edit-table textarea {
+    width: 100%;
+}
+
+.cikw-col-handle {
+    width: 36px;
+}
+
+.cikw-drag-handle {
+    color: #646970;
+    cursor: move;
+    font-size: 18px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.cikw-sortable-placeholder td,
+.cikw-sortable-placeholder {
+    background: #f0f6fc !important;
+    height: 64px;
+}
+
+.cikw-grid-form {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    margin-top: 10px;
+    max-width: 1180px;
+    padding: 16px;
+}
+
+.cikw-grid-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    gap: 6px;
+}
+
+.cikw-grid-form input,
+.cikw-grid-form textarea {
+    font-weight: 400;
+}
+
+.cikw-grid-wide {
+    grid-column: 1 / -1;
+}
+
+.cikw-checkbox-label {
+    align-items: flex-start;
+    justify-content: end;
+}
+
+.cikw-image-control {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.cikw-image-control input[type="number"] {
+    max-width: 92px;
+}
+
+.cikw-image-preview {
+    border: 1px solid #c3c4c7;
+    height: 42px;
+    object-fit: cover;
+    width: 42px;
+}
+
+.cikw-category-prize-group {
+    margin: 24px 0 32px;
+}
+
+.cikw-summary {
+    background: #eef8ef;
+    border-left: 4px solid #00a32a;
+    display: inline-block;
+    margin: 0 0 10px;
+    padding: 8px 12px;
+}
+
+.cikw-summary-error {
+    background: #fcf0f1;
+    border-left-color: #d63638;
+}
+
+.cikw-new-row td {
+    background: #f6f7f7;
+}
