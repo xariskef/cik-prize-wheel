@@ -66,6 +66,11 @@ final class CIKW_Entries_Query
     /**
      * Build the shared WHERE fragment.
      *
+     * Every user-supplied value is bound with $wpdb->prepare() here; the
+     * only things interpolated are table names derived from $wpdb->prefix.
+     * Callers splice the returned fragment into their own query, and the
+     * ORDER BY column goes through the sanitize_orderby() allow-list.
+     *
      * Filters that live on the spins table are applied as EXISTS subqueries
      * rather than join conditions, so narrowing by outcome does not also
      * distort the per-entry aggregates shown alongside it.

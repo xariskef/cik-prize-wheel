@@ -49,29 +49,37 @@ final class CIKW_Dashboard
         $spins = CIKW_Activator::table_name('spins');
         $today = current_time('Y-m-d');
 
-        $last_activity = $wpdb->get_var("SELECT MAX(created_at) FROM {$spins}");
+        $last_activity = $wpdb->get_var($wpdb->prepare('SELECT MAX(created_at) FROM %i', $spins));
 
         return [
             'entries_today' => (int) $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM {$entries} WHERE DATE(created_at) = %s",
+                'SELECT COUNT(*) FROM %i WHERE DATE(created_at) = %s',
+                $entries,
                 $today
             )),
-            'entries_total' => (int) $wpdb->get_var("SELECT COUNT(*) FROM {$entries}"),
+            'entries_total' => (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i', $entries)),
             'spins_today' => (int) $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM {$spins} WHERE DATE(created_at) = %s",
+                'SELECT COUNT(*) FROM %i WHERE DATE(created_at) = %s',
+                $spins,
                 $today
             )),
             'wins_today' => (int) $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM {$spins} WHERE outcome = 'win' AND DATE(created_at) = %s",
+                'SELECT COUNT(*) FROM %i WHERE outcome = %s AND DATE(created_at) = %s',
+                $spins,
+                'win',
                 $today
             )),
-            'unredeemed' => (int) $wpdb->get_var(
-                "SELECT COUNT(*) FROM {$spins} WHERE outcome = 'win' AND redeemed_at IS NULL"
-            ),
+            'unredeemed' => (int) $wpdb->get_var($wpdb->prepare(
+                'SELECT COUNT(*) FROM %i WHERE outcome = %s AND redeemed_at IS NULL',
+                $spins,
+                'win'
+            )),
             'pending_emails' => CIKW_Cron::pending_count(),
-            'failed_emails' => (int) $wpdb->get_var(
-                "SELECT COUNT(*) FROM {$entries} WHERE email_status = 'failed'"
-            ),
+            'failed_emails' => (int) $wpdb->get_var($wpdb->prepare(
+                'SELECT COUNT(*) FROM %i WHERE email_status = %s',
+                $entries,
+                'failed'
+            )),
             'last_activity' => $last_activity ? (string) $last_activity : null,
             // When the queue worker last did something. If this is hours old
             // while emails are piling up, WP-Cron is not firing - which is
@@ -97,12 +105,14 @@ final class CIKW_Dashboard
 
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT p.id, p.title, p.stock_total, p.stock_remaining, c.name AS category
-                   FROM {$prizes} p
-                   LEFT JOIN {$categories} c ON c.id = p.category_id
+                'SELECT p.id, p.title, p.stock_total, p.stock_remaining, c.name AS category
+                   FROM %i p
+                   LEFT JOIN %i c ON c.id = p.category_id
                   WHERE p.stock_total > 0 AND p.is_active = 1
                   ORDER BY (p.stock_remaining / NULLIF(p.stock_total, 0)) ASC, p.title ASC
-                  LIMIT %d",
+                  LIMIT %d',
+                $prizes,
+                $categories,
                 $limit
             ),
             ARRAY_A

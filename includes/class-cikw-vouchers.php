@@ -43,11 +43,15 @@ final class CIKW_Vouchers
                         p.image_id AS prize_image_id,
                         c.name AS category_name,
                         e.id AS entry_id, e.full_name, e.email, e.phone, e.company
-                   FROM {$spins} s
-                   LEFT JOIN {$prizes} p ON p.id = s.prize_id
-                   LEFT JOIN {$categories} c ON c.id = s.category_id
-                   LEFT JOIN {$entries} e ON e.id = s.entry_id
+                   FROM %i s
+                   LEFT JOIN %i p ON p.id = s.prize_id
+                   LEFT JOIN %i c ON c.id = s.category_id
+                   LEFT JOIN %i e ON e.id = s.entry_id
                   WHERE s.voucher_code = %s",
+                $spins,
+                $prizes,
+                $categories,
+                $entries,
                 $code
             ),
             ARRAY_A
@@ -173,6 +177,8 @@ final class CIKW_Vouchers
             );
         }
 
+        // Table names come from $wpdb->prefix and every user-supplied value in
+        // $where was bound through prepare() above.
         $clause = implode(' AND ', $where);
         $offset = max(0, ($page - 1) * $per_page);
 
@@ -223,6 +229,7 @@ final class CIKW_Vouchers
             );
         }
 
+        // Same as all(): identifiers are internal, values were prepared above.
         $clause = implode(' AND ', $where);
 
         return (int) $wpdb->get_var(
@@ -247,22 +254,28 @@ final class CIKW_Vouchers
         $spins = CIKW_Activator::table_name('spins');
         $prizes = CIKW_Activator::table_name('prizes');
 
-        $total = (int) $wpdb->get_var(
-            "SELECT COUNT(*) FROM {$spins} WHERE outcome = 'win' AND voucher_code IS NOT NULL"
-        );
-        $redeemed = (int) $wpdb->get_var(
-            "SELECT COUNT(*) FROM {$spins} WHERE outcome = 'win' AND redeemed_at IS NOT NULL"
-        );
+        $total = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM %i WHERE outcome = 'win' AND voucher_code IS NOT NULL",
+            $spins
+        ));
+        $redeemed = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM %i WHERE outcome = 'win' AND redeemed_at IS NOT NULL",
+            $spins
+        ));
 
         $by_prize = $wpdb->get_results(
-            "SELECT p.title,
-                    COUNT(s.id) AS won,
-                    COUNT(s.redeemed_at) AS redeemed
-               FROM {$spins} s
-               INNER JOIN {$prizes} p ON p.id = s.prize_id
-              WHERE s.outcome = 'win'
-              GROUP BY p.id, p.title
-              ORDER BY won DESC, p.title ASC",
+            $wpdb->prepare(
+                "SELECT p.title,
+                        COUNT(s.id) AS won,
+                        COUNT(s.redeemed_at) AS redeemed
+                   FROM %i s
+                   INNER JOIN %i p ON p.id = s.prize_id
+                  WHERE s.outcome = 'win'
+                  GROUP BY p.id, p.title
+                  ORDER BY won DESC, p.title ASC",
+                $spins,
+                $prizes
+            ),
             ARRAY_A
         );
 

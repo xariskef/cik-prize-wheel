@@ -69,13 +69,14 @@ final class CIKW_Cron
         $now = current_time('mysql');
 
         $ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT id FROM {$table}
+            "SELECT id FROM %i
               WHERE email_status = 'pending'
                 AND finished_at IS NOT NULL
                 AND email_attempts < %d
                 AND (email_next_attempt_at IS NULL OR email_next_attempt_at <= %s)
               ORDER BY email_next_attempt_at IS NULL DESC, finished_at ASC
               LIMIT %d",
+            $table,
             CIKW_Mailer::MAX_ATTEMPTS,
             $now,
             $limit
@@ -123,8 +124,9 @@ final class CIKW_Cron
         $table = CIKW_Activator::table_name('entries');
 
         return (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table}
+            "SELECT COUNT(*) FROM %i
               WHERE email_status = 'pending' AND finished_at IS NOT NULL AND email_attempts < %d",
+            $table,
             CIKW_Mailer::MAX_ATTEMPTS
         ));
     }

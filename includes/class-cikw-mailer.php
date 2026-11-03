@@ -163,13 +163,16 @@ final class CIKW_Mailer
 
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT s.*, c.name AS category_name, c.description AS category_description,
+                'SELECT s.*, c.name AS category_name, c.description AS category_description,
                         p.title AS prize_title, p.description AS prize_description, p.image_id AS prize_image_id
-                   FROM {$spins} s
-                   LEFT JOIN {$categories} c ON c.id = s.category_id
-                   LEFT JOIN {$prizes} p ON p.id = s.prize_id
+                   FROM %i s
+                   LEFT JOIN %i c ON c.id = s.category_id
+                   LEFT JOIN %i p ON p.id = s.prize_id
                   WHERE s.entry_id = %d
-                  ORDER BY s.spin_number ASC, s.id ASC",
+                  ORDER BY s.spin_number ASC, s.id ASC',
+                $spins,
+                $categories,
+                $prizes,
                 $entry_id
             ),
             ARRAY_A
